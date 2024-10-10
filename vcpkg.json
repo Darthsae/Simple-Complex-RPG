@@ -1,0 +1,17 @@
+{
+  "dependencies": [
+    "boost-asio",
+    {
+      "name": "imgui",
+      "default-features": false,
+      "features": [
+        "docking-experimental",
+        "freetype",
+        "sdl2-binding",
+        "sdl2-renderer-binding"
+      ]
+    },
+    "sdl2",
+    "sdl2-image"
+  ]
+}
