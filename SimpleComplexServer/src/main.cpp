@@ -2,7 +2,8 @@
 #include "simple_complex_rpg/server/server.h"
 
 int main(int, char**){
-    SimpleComplexRPG::Server::Server server = SimpleComplexRPG::Server::Server();
-    server.run();
+    boost::asio::io_context io_context;
+    SimpleComplexRPG::Server::Server server(io_context, 12345);
+    io_context.run();
     return 0;
 }

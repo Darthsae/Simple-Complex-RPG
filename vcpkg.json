@@ -1,6 +1,7 @@
 {
   "dependencies": [
     "boost-asio",
+    "boost-thread",
     {
       "name": "imgui",
       "default-features": false,
@@ -12,6 +13,7 @@
       ]
     },
     "sdl2",
-    "sdl2-image"
+    "sdl2-image",
+    "box2d"
   ]
 }
