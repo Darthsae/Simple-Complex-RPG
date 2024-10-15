@@ -40,17 +40,11 @@ Scene::Scene(uint32_t flags) {
     drawingSignature.set(coordinator.getComponentType<Data::Circlef>(), true);
     drawingSignature.set(coordinator.getComponentType<Graphics::Drawable>(), true);
     coordinator.setSystemSignature<Graphics::DrawSystem>(drawingSignature);
-
-    entities.reserve(ECS::MAX_ENTITIES);
-
-    for (ECS::Entity i = 0; i < ECS::MAX_ENTITIES; i++) {
-        entities.push_back(coordinator.createEntity());
-    }
 }
 
 Scene::~Scene()
 {
-    box2dPhysicsSystem.~shared_ptr();
+    // box2dPhysicsSystem.~shared_ptr();
     deiVoluntasPhysicsSystem.~shared_ptr();
     drawSystem.~shared_ptr();
     entities.clear();
@@ -66,4 +60,15 @@ void Scene::Update(float deltaTime) {
 
 void Scene::Draw(SDL_Renderer* renderer) {
     drawSystem->Draw(cameraPosition, entities, coordinator, renderer);
+}
+
+ECS::Entity Scene::createEntity() {
+    ECS::Entity entity = coordinator.createEntity();
+    entities.push_back(entity);
+    return entity;
+}
+
+void Scene::destroyEntity(ECS::Entity entity) {
+    coordinator.destroyEntity(entity);
+    entities.erase(std::remove(entities.begin(), entities.end(), entity), entities.end());
 }

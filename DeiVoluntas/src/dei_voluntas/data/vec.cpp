@@ -79,6 +79,10 @@ Vec2f Vec2f::Normalize() const {
     }
     return Vec2f(x, y) / magnitude;
 }
+
+Vec2f Vec2f::VectorTo(const Vec2f &other) const {
+    return other - *this;
+}
 #pragma endregion
 
 #pragma region Vec2i

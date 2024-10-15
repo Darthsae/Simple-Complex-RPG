@@ -3,7 +3,7 @@
 #include <vector>
 #include "dei_voluntas/ecs/ecs_types.h"
 #include "dei_voluntas/ecs/ecs_coordinator.h"
-#include "dei_voluntas/physics/box2d/box2d_physics_system.h"
+// #include "dei_voluntas/physics/box2d/box2d_physics_system.h"
 #include "dei_voluntas/physics/dei_voluntas/dei_voluntas_physics_system.h"
 #include "dei_voluntas/graphics/draw_system.h"
 #include <SDL.h>
@@ -23,11 +23,14 @@ namespace DeiVoluntas {
         void Update(float deltaTime);
         void Draw(SDL_Renderer* renderer);
 
+        ECS::Entity createEntity();
+        void destroyEntity(ECS::Entity entity);
+
         ECS::Coordinator coordinator;
         std::vector<ECS::Entity> entities;
         Data::Vec2f cameraPosition;
     private:
-        std::shared_ptr<Physics::Box2D::Box2DPhysicsSystem> box2dPhysicsSystem;
+        // std::shared_ptr<Physics::Box2D::Box2DPhysicsSystem> box2dPhysicsSystem;
         std::shared_ptr<Physics::DeiVoluntas::DeiVoluntasPhysicsSystem> deiVoluntasPhysicsSystem;
         std::shared_ptr<Graphics::DrawSystem> drawSystem;
         uint32_t flags;

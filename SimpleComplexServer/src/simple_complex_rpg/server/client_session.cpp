@@ -32,7 +32,7 @@ void ClientSession::readPacket() {
             std::memcpy(&packetSize, &readHeader_, sizeof(uint32_t));
 
             // Step 2: Resize the read buffer to the size of the packet
-            std::cout << "Packet size: " << packetSize << std::endl;
+            //std::cout << "Packet size: " << packetSize << std::endl;
 
             boost::asio::async_read(socket_, boost::asio::buffer(readMsg_, packetSize),
                 [this, self](boost::system::error_code ec, std::size_t length) {
@@ -44,17 +44,17 @@ void ClientSession::readPacket() {
                             vec.push_back(readMsg_[i]);
                         }
 
-                        std::cout << std::endl;
+                        //std::cout << std::endl;
 
                         Packet packet(PacketVersion::V0, vec);
-                        std::cout << "Packet size: " << length << std::endl;
-                        std::cout << "Received packet version: " << (int)packet.packet_version << " of " << (int)packet.packet_id << std::endl;
+                        //std::cout << "Packet size: " << length << std::endl;
+                        //std::cout << "Received packet version: " << (int)packet.packet_version << " of " << (int)packet.packet_id << std::endl;
 
                         readMsg_ = new uint8_t[Packet::MAX_PACKET_SIZE];
 
                         switch (packet.packet_id) {
                             case PacketID::SYNC: {
-                                std::cout << "Sync received" << std::endl;
+                                //std::cout << "Sync received" << std::endl;
                                 // Broadcast to all clients
                                 for (auto& participant : participants) {
                                     participant->deliver(packet);
@@ -62,7 +62,7 @@ void ClientSession::readPacket() {
                                 break;
                             }
                             case PacketID::ECHO: {
-                                std::cout << "Echo received from client " << (int)packet.packet_sender << std::endl;
+                                //std::cout << "Echo received from client " << (int)packet.packet_sender << std::endl;
                                 // Broadcast to all clients
                                 for (auto& participant : participants) {
                                     if (participant->get_id() != packet.packet_sender) participant->deliver(packet);
@@ -103,9 +103,9 @@ void ClientSession::sendPacket() {
     std::memcpy(buffer.data(), &packetSize, sizeof(uint32_t));
     std::memcpy(buffer.data() + sizeof(uint32_t), writeMessages_.front().to_bytes(), packetSize);
 
-    std::cout << "Sending: " << (int)writeMessages_.front().packet_version << " of " << (int)writeMessages_.front().packet_id << std::endl;
-    std::cout << "The buffer is " << buffer.size() << " bytes long" << std::endl;
-    std::cout << "The data is " << packetSize << " bytes long" << std::endl;
+    //std::cout << "Sending: " << (int)writeMessages_.front().packet_version << " of " << (int)writeMessages_.front().packet_id << std::endl;
+    //std::cout << "The buffer is " << buffer.size() << " bytes long" << std::endl;
+    //std::cout << "The data is " << packetSize << " bytes long" << std::endl;
 
     boost::asio::async_write(socket_, boost::asio::buffer(buffer),
         [this, self](boost::system::error_code ec, std::size_t /*length*/) {

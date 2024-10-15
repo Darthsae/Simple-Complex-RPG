@@ -32,6 +32,8 @@ namespace DeiVoluntas::Data {
 
         float Magnitude() const;
         Vec2f Normalize() const;
+
+        Vec2f VectorTo(const Vec2f& other) const;
     };
 
     struct Vec2i {

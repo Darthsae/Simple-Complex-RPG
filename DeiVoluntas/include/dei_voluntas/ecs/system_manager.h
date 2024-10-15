@@ -9,14 +9,42 @@ namespace DeiVoluntas::ECS {
     class SystemManager {
     public:
         template<typename T>
-        std::shared_ptr<T> registerSystem();
+        std::shared_ptr<T> registerSystem() {
+            const char* typeName = typeid(T).name();
+
+            auto system = std::make_shared<T>();
+            systems.insert({typeName, system});
+            return system;
+        }
 
         template<typename T>
-        void setSignature(Signature signature);
+        void setSignature(Signature signature) {
+            const char* typeName = typeid(T).name();
 
-        void entityDestroyed(Entity entity);
+            signatures.insert({typeName, signature});
+        }
 
-        void entitySignatureChanged(Entity entity, Signature entitySignature);
+        void entityDestroyed(Entity entity) {
+            for (const auto& pair : systems) {
+                const auto& system = pair.second;
+
+                system->entities.erase(entity);
+            }
+        }
+
+        void entitySignatureChanged(Entity entity, Signature entitySignature) {
+            for (const auto& pair : systems) {
+                const auto& type = pair.first;
+                const auto& system = pair.second;
+                const auto& systemSignature = signatures[type];
+
+                if ((entitySignature & systemSignature) == systemSignature) {
+                    system->entities.insert(entity);
+                } else {
+                    system->entities.erase(entity);
+                }
+            }
+        }
     private:
         std::unordered_map<const char*, Signature> signatures;
         std::unordered_map<const char*, std::shared_ptr<System>> systems;

@@ -10,9 +10,11 @@ namespace SimpleComplexRPG::Server
     class Server {
     public:
         Server(boost::asio::io_context& io_context, int16_t port);
-        void run();
+        void Update(float dt);
+
+        void WriteToAllClients(const Packet& message);
     private:
-        void acceptConnection();
+        void AcceptConnection();
 
         tcp::acceptor acceptor_;
     };

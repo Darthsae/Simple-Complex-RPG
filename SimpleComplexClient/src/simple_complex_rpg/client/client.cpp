@@ -47,7 +47,7 @@ void Client::readPacket() {
                 std::memcpy(&packetSize, &readHeader_, sizeof(uint32_t));
 
                 // Step 2: Resize the read buffer to the size of the packet
-                std::cout << "Packet size: " << packetSize << std::endl;
+                //std::cout << "Packet size: " << packetSize << std::endl;
 
                 // Step 3: Read the packet data
                 boost::asio::async_read(socket_, boost::asio::buffer(readMsg_, packetSize), 
@@ -60,11 +60,11 @@ void Client::readPacket() {
                                 vec.push_back(readMsg_[i]);
                             }
 
-                            std::cout << std::endl;
+                            //std::cout << std::endl;
 
                             SCServer::Packet packet(SCServer::PacketVersion::V0, vec);
 
-                            std::cout << "Received packet version: " << (int)packet.packet_version << " of " << (int)packet.packet_id << std::endl;
+                            //std::cout << "Received packet version: " << (int)packet.packet_version << " of " << (int)packet.packet_id << std::endl;
 
                             readMsg_ = new uint8_t[SCServer::Packet::MAX_PACKET_SIZE];
 
@@ -77,6 +77,11 @@ void Client::readPacket() {
                                     std::cout << "Deliver received:" << std::endl;
                                     id = packet.deserialize_uint8();
                                     std::cout << "Client ID is now " << (int)id << std::endl;
+                                    break;
+                                }
+                                case SCServer::PacketID::UPDATE: {
+                                    float dt = packet.deserialize_float();
+                                    //std::cout << "Server delta time: " << dt << std::endl;
                                     break;
                                 }
                             }
@@ -97,9 +102,9 @@ void Client::writePacket() {
     std::memcpy(buffer.data(), &packetSize, sizeof(uint32_t));
     std::memcpy(buffer.data() + sizeof(uint32_t), writeMessages_.front().to_bytes(), packetSize);
 
-    std::cout << "Sending: " << (int)writeMessages_.front().packet_version << " of " << (int)writeMessages_.front().packet_id << " from " << (int)writeMessages_.front().packet_sender << std::endl;
-    std::cout << "The buffer is " << buffer.size() << " bytes long" << std::endl;
-    std::cout << "The data is " << packetSize << " bytes long" << std::endl;
+    //std::cout << "Sending: " << (int)writeMessages_.front().packet_version << " of " << (int)writeMessages_.front().packet_id << " from " << (int)writeMessages_.front().packet_sender << std::endl;
+    //std::cout << "The buffer is " << buffer.size() << " bytes long" << std::endl;
+    //std::cout << "The data is " << packetSize << " bytes long" << std::endl;
 
     boost::asio::async_write(socket_, boost::asio::buffer(buffer),
         [this](boost::system::error_code ec, std::size_t /*length*/) {

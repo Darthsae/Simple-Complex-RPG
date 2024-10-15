@@ -7,16 +7,33 @@
 namespace DeiVoluntas::ECS {
     class EntityManager {
     public:
-        EntityManager();
+        EntityManager() {
+            for (Entity i = 0; i < MAX_ENTITIES; i++) {
+                availableEntities.push(i);
+            }
+        }
 
-        Entity createEntity();
+        Entity createEntity() {
+            Entity id = availableEntities.front();
+            availableEntities.pop();
+            livingEntities++;
 
-        void destroyEntity(Entity entity);
+            return id;
+        }
 
-        void setSignature(Entity entity, Signature signature);
+        void destroyEntity(Entity entity) {
+            signatures[entity].reset();
+            availableEntities.push(entity);
+            livingEntities--;
+        }
 
-        Signature getSignature(Entity entity);
+        void setSignature(Entity entity, Signature signature) {
+            signatures[entity] = signature;
+        }
 
+        Signature getSignature(Entity entity) {
+            return signatures[entity];
+        }
     private:
         std::queue<Entity> availableEntities;
         std::array<Signature, MAX_ENTITIES> signatures;

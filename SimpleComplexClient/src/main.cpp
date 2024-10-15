@@ -6,11 +6,21 @@
 #include <SDL_image.h>
 #include "simple_complex_rpg/client/client.h"
 #include "simple_complex_rpg/server/packet.h"
-#include "dei_voluntas/scene.h"
+#include <dei_voluntas/scene.h>
+#include <dei_voluntas/physics/dei_voluntas/rigid_body.h>
+#include <dei_voluntas/physics/dei_voluntas/transform.h>
+#include <dei_voluntas/graphics/drawable.h>
+#include <dei_voluntas/data/circle.h>
+#include <random>
 
 using namespace SimpleComplexRPG::Client;
 
 namespace SCServer = SimpleComplexRPG::Server;
+
+namespace ECS = DeiVoluntas::ECS;
+namespace Physics = DeiVoluntas::Physics::DeiVoluntas;
+namespace Graphics = DeiVoluntas::Graphics;
+namespace Data = DeiVoluntas::Data;
 
 int main(int, char**){
     std::cout << "Hello, from SimpleComplexRPG!\n";
@@ -42,30 +52,76 @@ int main(int, char**){
 
     DeiVoluntas::Scene scene(DeiVoluntas::SceneFlags::DEI_VOLUNTAS_PHYSICS | DeiVoluntas::SceneFlags::SDL2_GRAPHICS);
 
+    std::vector<ECS::Entity> entities;
+    entities.reserve(40);
+
+    std::default_random_engine generator;
+    std::uniform_real_distribution<float> xPositionDistribution(0.0f, 800.0f);
+    std::uniform_real_distribution<float> yPositionDistribution(0.0f, 600.0f);
+    std::uniform_real_distribution<float> velocityDistribution(-10.0f, 10.0f);
+    std::uniform_real_distribution<float> radiusDistribution(1.0f, 5.0f);
+    std::uniform_int_distribution<uint16_t> colorDistribution(0, 255);
+
+    int testingEntities = 4500;
+
+    for (int i = 0; i < testingEntities; i++) {
+        ECS::Entity entity = scene.createEntity();
+        
+        scene.coordinator.addComponent<Physics::RigidBody2f>(entity, Physics::RigidBody2f(Vec2f(velocityDistribution(generator), velocityDistribution(generator)), 0.0f));
+        scene.coordinator.addComponent<Physics::Transform2f>(entity, Physics::Transform2f(Vec2f(xPositionDistribution(generator), yPositionDistribution(generator)), 0.0f, Vec2f(1.0f, 1.0f)));
+        scene.coordinator.addComponent<Data::Circlef>(entity, Data::Circlef(radiusDistribution(generator)));
+        scene.coordinator.addComponent<Graphics::Drawable>(entity, Graphics::Drawable((uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator)));
+    }
+
+    float dt = 0.0f;
+    float playerSpeed = 10.0f;
+    const uint8_t* keyboardState;
+
     while (!quit) {
+        auto startTime = std::chrono::high_resolution_clock::now();
+
         while (SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) {
                 quit = true;
             }
             else if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_w) {
-                    scene.cameraPosition.y -= 10;
-                }
-                else if (event.key.keysym.sym == SDLK_s) {
-                    scene.cameraPosition.y += 10;
-                }
-                else if (event.key.keysym.sym == SDLK_a) {
-                    scene.cameraPosition.x -= 10;
-                }
-                else if (event.key.keysym.sym == SDLK_d) {
-                    scene.cameraPosition.x += 10;
+                switch (event.key.keysym.sym) {
+                    case SDLK_BACKQUOTE:
+                        quit = true;
+                        break;
                 }
             }
         }
 
+        #pragma region Keyboard Input Held
+        keyboardState = SDL_GetKeyboardState(nullptr);
+
+        if (keyboardState[SDL_SCANCODE_W]) {
+            scene.cameraPosition.y -= 10;
+        }
+
+        if (keyboardState[SDL_SCANCODE_S]) {
+            scene.cameraPosition.y += 10;
+        }
+
+        if (keyboardState[SDL_SCANCODE_A]) {
+            scene.cameraPosition.x -= 10;
+        }
+
+        if (keyboardState[SDL_SCANCODE_D]) {
+            scene.cameraPosition.x += 10;
+        }
+        #pragma endregion
+
+        scene.Update(dt);
+
         SDL_RenderClear(renderer);
         scene.Draw(renderer);
         SDL_RenderPresent(renderer);
+
+        auto stopTime = std::chrono::high_resolution_clock::now();
+
+		dt = std::chrono::duration<float, std::chrono::seconds::period>(stopTime - startTime).count();
     }
 
     /*

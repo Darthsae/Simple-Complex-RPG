@@ -10,7 +10,8 @@ namespace SimpleComplexRPG::Server {
         SYNC = 1,
         DELIVER = 2,
         ECHO = 3,
-        QUIT = 4
+        QUIT = 4,
+        UPDATE = 5
     };
 
     enum PacketVersion : uint16_t {

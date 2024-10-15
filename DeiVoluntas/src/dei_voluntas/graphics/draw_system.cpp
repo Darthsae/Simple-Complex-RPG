@@ -15,6 +15,6 @@ void DrawSystem::Draw(const Vec2f& position, const std::vector<ECS::Entity>& ent
         auto& rigidBody = coordinator.getComponent<Physics::DeiVoluntas::RigidBody2f>(entity);
         auto& drawable = coordinator.getComponent<Drawable>(entity);
 
-        filledCircleRGBA(renderer, transform.position.x - position.x, transform.position.y - position.y, circle.radius, drawable.color.r, drawable.color.g, drawable.color.b, drawable.color.a);
+        filledCircleRGBA(renderer, (Sint16)(transform.position.x - position.x), (Sint16)(transform.position.y - position.y), (Sint16)(circle.radius * transform.scale.Magnitude()), drawable.color.r, drawable.color.g, drawable.color.b, drawable.color.a);
     }
 }

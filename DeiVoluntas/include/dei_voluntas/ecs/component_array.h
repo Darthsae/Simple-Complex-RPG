@@ -14,12 +14,38 @@ namespace DeiVoluntas::ECS {
     template<typename T>
     class ComponentArray : public IComponentArray {
     public:
-        void insertData(Entity entity, T component);
-        void removeData(Entity entity);
+        void insertData(Entity entity, T component) {
+            size_t newIndex = size;
+            entityToIndexMap[entity] = newIndex;
+            indexToEntityMap[newIndex] = entity;
+            componentArray[newIndex] = component;
+            ++size;
+        }
 
-        T& getData(Entity entity);
-        void entityDestroyed(Entity entity) override;
+        void removeData(Entity entity) {
+            size_t indexOfRemovedEntity = entityToIndexMap[entity];
+            size_t indexOfLastElement = size - 1;
+            componentArray[indexOfRemovedEntity] = componentArray[indexOfLastElement];
 
+            Entity entityOfLastElement = indexToEntityMap[indexOfLastElement];
+            entityToIndexMap[entityOfLastElement] = indexOfRemovedEntity;
+            indexToEntityMap[indexOfRemovedEntity] = entityOfLastElement;
+
+            entityToIndexMap.erase(entity);
+            indexToEntityMap.erase(indexOfLastElement);
+
+            --size;
+        }
+
+        T& getData(Entity entity) {
+            return componentArray[entityToIndexMap[entity]];
+        }
+
+        void entityDestroyed(Entity entity) override {
+            if (entityToIndexMap.find(entity) != entityToIndexMap.end()) {
+                removeData(entity);
+            }
+        }
     private:
         std::array<T, MAX_ENTITIES> componentArray;
 
