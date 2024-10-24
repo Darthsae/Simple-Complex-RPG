@@ -2,6 +2,12 @@
 
 Thank you for considering contributing to this project! Please follow these guidelines to ensure that your contribution aligns with the project’s coding style and standards.
 
+## Design Goals
+[Design Goals](./DESIGN_GOALS.md)
+
+## Code Quality
+[Code Quality](./CODE_QUALITY.md)
+
 ## Code Style
 
 ### Naming Conventions
@@ -92,7 +98,7 @@ Document each function with `@param` and `@return` tags:
  */
 ```
 
-For more detailed documentation standards, refer to our [documentation guide](./Documentation.md).
+For more detailed documentation standards, refer to our [documentation guide](./DOCUMENTATION.md).
 
 ---
 
@@ -119,7 +125,7 @@ cmake .
 make
 ```
 
-For more detailed build instructions, refer to the [build guide](./Building.md).
+For more detailed build instructions, refer to the [build guide](./BUILDING.md).
 
 ---
 
