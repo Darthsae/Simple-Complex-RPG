@@ -15,3 +15,9 @@ source_group(
   TREE "${PROJECT_SOURCE_DIR}/SimpleComplexCommon/include"
   PREFIX "Header Files"
   FILES ${HEADER_LIST})
+
+include(CTest)
+enable_testing()
+
+# add the tests
+add_subdirectory(tests)
