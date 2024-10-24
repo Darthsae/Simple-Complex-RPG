@@ -15,6 +15,7 @@
     "sdl2",
     "sdl2-image",
     "sdl2-gfx",
-    "box2d"
+    "box2d",
+    "entt"
   ]
 }

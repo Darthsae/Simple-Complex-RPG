@@ -1,74 +1,50 @@
 #include "dei_voluntas/scene.h"
-#include "dei_voluntas/physics/dei_voluntas/physical_properties.h"
-#include "dei_voluntas/physics/dei_voluntas/rigid_body.h"
-#include "dei_voluntas/physics/dei_voluntas/transform.h"
+#include "dei_voluntas/physics/physical_properties.h"
+#include "dei_voluntas/physics/rigid_body.h"
+#include "dei_voluntas/physics/transform.h"
 #include "dei_voluntas/graphics/drawable.h"
+#include "dei_voluntas/physics/body.h"
 
 using namespace DeiVoluntas;
 
-Scene::Scene(uint32_t flags) {
-    coordinator = ECS::Coordinator();
-    coordinator.init();
-    
-    /*if ((flags >> 0) & 1 == 1) {
-        coordinator.registerComponent<b2Body>();
-        box2dPhysicsSystem = coordinator.registerSystem<Physics::Box2D::Box2DPhysicsSystem>();
-        
-        ECS::Signature physicsSignature;
-        physicsSignature.set(coordinator.getComponentType<b2Body>(), true);
-        coordinator.setSystemSignature<Physics::Box2D::Box2DPhysicsSystem>(physicsSignature);
-    }*/
+using DeiVoluntas::Physics::PhysicalPropertiesf;
+using DeiVoluntas::Physics::RigidBody2f;
+using DeiVoluntas::Physics::Transform2f;
+using DeiVoluntas::Graphics::Drawable;
+using DeiVoluntas::Data::Vec2f;
+using DeiVoluntas::Data::Body;
 
-    coordinator.registerComponent<Physics::DeiVoluntas::PhysicalPropertiesf>();
-    coordinator.registerComponent<Physics::DeiVoluntas::RigidBody2f>();
-    coordinator.registerComponent<Physics::DeiVoluntas::Transform2f>();
-    deiVoluntasPhysicsSystem = coordinator.registerSystem<Physics::DeiVoluntas::DeiVoluntasPhysicsSystem>();
-    
-    ECS::Signature physicsSignature;
-    physicsSignature.set(coordinator.getComponentType<Physics::DeiVoluntas::PhysicalPropertiesf>(), true);
-    physicsSignature.set(coordinator.getComponentType<Physics::DeiVoluntas::RigidBody2f>(), true);
-    physicsSignature.set(coordinator.getComponentType<Physics::DeiVoluntas::Transform2f>(), true);
-    coordinator.setSystemSignature<Physics::DeiVoluntas::DeiVoluntasPhysicsSystem>(physicsSignature);
-
-    cameraPosition = Data::Vec2f(0.0f, 0.0f);
-
-    coordinator.registerComponent<Data::Circlef>();
-    coordinator.registerComponent<Graphics::Drawable>();
-    drawSystem = coordinator.registerSystem<Graphics::DrawSystem>();
-
-    ECS::Signature drawingSignature;
-    drawingSignature.set(coordinator.getComponentType<Data::Circlef>(), true);
-    drawingSignature.set(coordinator.getComponentType<Graphics::Drawable>(), true);
-    coordinator.setSystemSignature<Graphics::DrawSystem>(drawingSignature);
+Scene::Scene(uint32_t flags, Vec2f& cameraPosition, Vec2f& cameraScale, const Vec2f& quadtreePosition, const Vec2f& quadtreeSize): 
+    flags(flags),
+    cameraPosition(cameraPosition),
+    cameraScale(cameraScale),
+    registry(),
+    quadtree(quadtreePosition.x, quadtreePosition.y, quadtreeSize.x, quadtreeSize.y, 10)
+{
+    physicsSystem = std::make_unique<PhysicsSystem>();
+    drawSystem = std::make_unique<Graphics::DrawSystem>();
 }
 
 Scene::~Scene()
 {
-    // box2dPhysicsSystem.~shared_ptr();
-    deiVoluntasPhysicsSystem.~shared_ptr();
-    drawSystem.~shared_ptr();
-    entities.clear();
 }
 
 void Scene::Update(float deltaTime) {
-    /*if ((flags >> 0) & 1) {
-        box2dPhysicsSystem->Update(entities, coordinator, deltaTime);
-    }*/
-
-    deiVoluntasPhysicsSystem->Update(entities, coordinator, deltaTime);
+    physicsSystem->Update(registry, quadtree, deltaTime);
 }
 
 void Scene::Draw(SDL_Renderer* renderer) {
-    drawSystem->Draw(cameraPosition, entities, coordinator, renderer);
+    drawSystem->Draw(cameraPosition, cameraScale, registry, quadtree, renderer);
 }
-
-ECS::Entity Scene::createEntity() {
-    ECS::Entity entity = coordinator.createEntity();
-    entities.push_back(entity);
-    return entity;
-}
-
-void Scene::destroyEntity(ECS::Entity entity) {
-    coordinator.destroyEntity(entity);
-    entities.erase(std::remove(entities.begin(), entities.end(), entity), entities.end());
+entt::entity Scene::CreateEntity(Vec2f pos, const SDL_Color color, const b2CircleShape &shape, b2BodyType b2BodyType, float density, float friction, float restitution, float restitutionThreshold, b2Vec2 vel, float linearDamping, float angularVelocity, float angularDamping, bool fixedRotation)
+{
+    const auto entity = registry.create();
+    float x = pos.x;
+    float y = pos.y;
+    float density = density;
+    float radius = shape.m_radius;
+    registry.emplace<Transform2f>(entity, pos, 0.0f);
+    registry.emplace<RigidBody2f>(entity, vel, angularVelocity);
+    registry.emplace<Body>(entity, physicsSystem->CreateBody(x, y, shape, b2BodyType, density, friction, restitution, restitutionThreshold, vel, linearDamping, angularVelocity, angularDamping, fixedRotation));
+    registry.emplace<Drawable>(entity, color);
 }
