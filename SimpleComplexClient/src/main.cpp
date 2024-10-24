@@ -7,8 +7,8 @@
 #include "simple_complex_rpg/client/client.h"
 #include "simple_complex_rpg/server/packet.h"
 #include <dei_voluntas/scene.h>
-#include <dei_voluntas/physics/dei_voluntas/rigid_body.h>
-#include <dei_voluntas/physics/dei_voluntas/transform.h>
+#include <dei_voluntas/physics/rigid_body.h>
+#include <dei_voluntas/physics/transform.h>
 #include <dei_voluntas/graphics/drawable.h>
 #include <dei_voluntas/data/circle.h>
 #include <random>
@@ -47,13 +47,10 @@ int main(int, char**){
         return -1;
     }
 
-    SDL_Window *window = SDL_CreateWindow("TCreator", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
+    SDL_Window *window = SDL_CreateWindow("Simple Complex RPG", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, 0);
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
 
-    DeiVoluntas::Scene scene(DeiVoluntas::SceneFlags::DEI_VOLUNTAS_PHYSICS | DeiVoluntas::SceneFlags::SDL2_GRAPHICS);
-
-    std::vector<ECS::Entity> entities;
-    entities.reserve(40);
+    DeiVoluntas::Scene scene();
 
     std::default_random_engine generator;
     std::uniform_real_distribution<float> xPositionDistribution(0.0f, 800.0f);
@@ -65,12 +62,7 @@ int main(int, char**){
     int testingEntities = 4500;
 
     for (int i = 0; i < testingEntities; i++) {
-        ECS::Entity entity = scene.createEntity();
-        
-        scene.coordinator.addComponent<Physics::RigidBody2f>(entity, Physics::RigidBody2f(Vec2f(velocityDistribution(generator), velocityDistribution(generator)), 0.0f));
-        scene.coordinator.addComponent<Physics::Transform2f>(entity, Physics::Transform2f(Vec2f(xPositionDistribution(generator), yPositionDistribution(generator)), 0.0f, Vec2f(1.0f, 1.0f)));
-        scene.coordinator.addComponent<Data::Circlef>(entity, Data::Circlef(radiusDistribution(generator)));
-        scene.coordinator.addComponent<Graphics::Drawable>(entity, Graphics::Drawable((uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator)));
+        scene.CreateEntity();
     }
 
     float dt = 0.0f;
