@@ -8,6 +8,12 @@ Thank you for considering contributing to this project! Please follow these guid
 ## Code Quality
 [Code Quality](./CODE_QUALITY.md)
 
+## Testing
+[Testing](./TESTING.md)
+
+## Architecture
+[Architecture](./ARCHITECTURE.md)
+
 ## Code Style
 
 ### Naming Conventions
