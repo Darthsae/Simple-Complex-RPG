@@ -25,3 +25,6 @@ source_group(
 
 include(CTest)
 enable_testing()
+
+# add the tests
+add_subdirectory(tests)

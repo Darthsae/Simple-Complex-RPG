@@ -1,10 +1,20 @@
+/**
+ *
+ */
+
 #ifndef PACKET_H
 #define PACKET_H
 #include <stdint.h>
 #include <vector>
 #include <string>
 
+/**
+ *
+ */
 namespace SimpleComplexRPG::Server {
+    /**
+     *
+     */
     enum PacketID : uint8_t {
         INVD = 0,
         SYNC = 1,
@@ -14,12 +24,18 @@ namespace SimpleComplexRPG::Server {
         UPDATE = 5
     };
 
+    /**
+     *
+     */
     enum PacketVersion : uint16_t {
         V0 = 0,
         V1 = 1,
         V2 = 2
     };
 
+    /**
+     *
+     */
     struct Packet {
         uint16_t packet_version;
         uint8_t packet_id;
@@ -72,6 +88,9 @@ namespace SimpleComplexRPG::Server {
         std::string deserialize_string();
     };
 
+    /**
+     *
+     */
     template<typename T>
     struct IPacketSerializable {
         virtual void serialize(Packet& packet) = 0;

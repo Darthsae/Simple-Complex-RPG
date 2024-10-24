@@ -21,3 +21,9 @@ source_group(
   TREE "${PROJECT_SOURCE_DIR}/DeiVoluntas/include"
   PREFIX "Header Files"
   FILES ${HEADER_LIST})
+
+include(CTest)
+enable_testing()
+
+# add the tests
+add_subdirectory(tests)
