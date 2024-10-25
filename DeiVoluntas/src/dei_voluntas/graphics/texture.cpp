@@ -1,5 +1,5 @@
 #include "dei_voluntas/graphics/texture.h"
-#include <SDL/SDL_image.h>
+#include <SDL_image.h>
 
 using namespace DeiVoluntas::Graphics;
 
@@ -11,5 +11,5 @@ Texture::Texture(SDL_Renderer* renderer, std::string path) {
 }
 
 Texture::~Texture() {
-    delete texture;
+    SDL_DestroyTexture(texture);
 }

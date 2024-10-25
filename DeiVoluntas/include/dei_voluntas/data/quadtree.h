@@ -64,10 +64,10 @@ namespace DeiVoluntas::Data {
         void Reset() {
             points.clear();
             if (divided) {
-                northeast = nullptr;
-                northwest = nullptr;
-                southeast = nullptr;
-                southwest = nullptr;
+                northeast.~unique_ptr();
+                northwest.~unique_ptr();
+                southeast.~unique_ptr();
+                southwest.~unique_ptr();
             }
         }
 

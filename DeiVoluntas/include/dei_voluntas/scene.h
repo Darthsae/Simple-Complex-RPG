@@ -25,7 +25,9 @@ namespace DeiVoluntas {
         void Update(float deltaTime);
         void Draw(SDL_Renderer* renderer);
 
-        entt::entity CreateEntity(Vec2f pos, const SDL_Color color, const b2CircleShape &shape, b2BodyType b2BodyType = b2_dynamicBody, float density = 1, float friction = 0, float restitution = 1, float restitutionThreshold = 0, b2Vec2 vel = b2Vec2_zero, float linearDamping = 0, float angularVelocity = 0, float angularDamping = 0, bool fixedRotation = false);
+        entt::entity CreateEntity(Vec2f pos, const SDL_Color color, const b2CircleShape &shape, b2BodyType b2BodyType = b2_dynamicBody, float density = 1, float friction = 0, float restitution = 1, float restitutionThreshold = 0, Vec2f vel = Vec2f::ZERO, float linearDamping = 0, float angularVelocity = 0, float angularDamping = 0, bool fixedRotation = false);
+        entt::entity CreateEntity(Vec2f pos, const SDL_Color color, const b2EdgeShape &shape, b2BodyType b2BodyType = b2_dynamicBody, float density = 1, float friction = 0, float restitution = 1, float restitutionThreshold = 0, Vec2f vel = Vec2f::ZERO, float linearDamping = 0, float angularVelocity = 0, float angularDamping = 0, bool fixedRotation = false);
+        entt::entity CreateEntity(Vec2f pos, const SDL_Color color, const b2PolygonShape &shape, b2BodyType b2BodyType = b2_dynamicBody, float density = 1, float friction = 0, float restitution = 1, float restitutionThreshold = 0, Vec2f vel = Vec2f::ZERO, float linearDamping = 0, float angularVelocity = 0, float angularDamping = 0, bool fixedRotation = false);
 
         entt::registry registry;
         Quadtree<entt::entity> quadtree;

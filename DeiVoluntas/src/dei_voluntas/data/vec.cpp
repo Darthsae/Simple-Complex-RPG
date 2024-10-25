@@ -9,6 +9,7 @@ Vec2f::Vec2f(float x, float y) : x(x), y(y) {}
 const Vec2f Vec2f::ZERO = Vec2f(0.0f, 0.0f);
 const Vec2f Vec2f::UNIT_X = Vec2f(1.0f, 0.0f);
 const Vec2f Vec2f::UNIT_Y = Vec2f(0.0f, 1.0f);
+const Vec2f Vec2f::UNIT_XY = Vec2f(1.0f, 1.0f);
 
 Vec2f Vec2f::operator+(const Vec2f &other) const {
     return Vec2f(x + other.x, y + other.y);
@@ -91,6 +92,7 @@ Vec2i::Vec2i(int x, int y) : x(x), y(y) {}
 const Vec2i Vec2i::ZERO = Vec2i(0, 0);
 const Vec2i Vec2i::UNIT_X = Vec2i(1, 0);
 const Vec2i Vec2i::UNIT_Y = Vec2i(0, 1);
+const Vec2i Vec2i::UNIT_XY = Vec2i(1, 1);
 
 Vec2i Vec2i::operator+(const Vec2i &other) const {
     return Vec2i(x + other.x, y + other.y);
@@ -170,6 +172,7 @@ Vec2d::Vec2d(double x, double y) : x(x), y(y) {}
 const Vec2d Vec2d::ZERO = Vec2d(0.0, 0.0);
 const Vec2d Vec2d::UNIT_X = Vec2d(1.0, 0.0);
 const Vec2d Vec2d::UNIT_Y = Vec2d(0.0, 1.0);
+const Vec2d Vec2d::UNIT_XY = Vec2d(1.0, 1.0);
 
 Vec2d Vec2d::operator+(const Vec2d &other) const {
     return Vec2d(x + other.x, y + other.y);
