@@ -79,3 +79,69 @@ Each palette should include the following:
 
 - **UI and Pixel Art Harmony**: Both UI elements and pixel art should adhere to the chosen palette to create a unified style.
 - **Testing Across Components**: Test color combinations in both UI mockups and in-game assets to ensure readability, consistency, and aesthetic appeal.
+
+---
+
+### Color Palettes and Color Codes
+
+---
+
+#### 1. **Lifeblood**
+   - **Description**: A vibrant, warm palette centered around reds, pinks, and oranges, symbolizing life and vitality.
+   - **Usage**: Ideal for health indicators, healing zones, or any UI elements related to vitality and regeneration. In pixel art, use for objects like healing fountains or characters with health-focused themes.
+   - **Primary**: `#FF4D4D` (Vibrant Red) - main color for health elements.
+   - **Secondary**: `#FF9999` (Soft Pink) - secondary accents for areas with a lighter life theme.
+   - **Accent**: `#FF0000` (Bold Red) - for health indicators and important UI alerts.
+   - **Highlight**: `#FFE6E6` (Pale Pink) - background or border highlights.
+   - **Shadow**: `#990000` (Deep Red) - adds depth to health-related areas.
+   - **Neutral**: `#4D4D4D` (Gray) - used for balance in UI components and text.
+
+#### 2. **Corruption**
+   - **Description**: A dark, eerie palette with deep purples, sickly greens, and muted grays, representing decay, corruption, and distortion.
+   - **Usage**: Suited for corrupted environments, bosses, or areas with a sense of dread and decay. Use for UI elements related to debuffs or areas depicting contamination or danger.
+   - **Primary**: `#4C2A85` (Dark Purple) - main color for corrupted elements and ominous areas.
+   - **Secondary**: `#5E5A63` (Muted Gray) - background elements and text in corrupted zones.
+   - **Accent**: `#8E0056` (Dark Magenta) - for visual focus on corrupted objects.
+   - **Highlight**: `#A067C1` (Pale Purple) - used sparingly for eerie highlights.
+   - **Shadow**: `#1A001A` (Blackened Purple) - deep shadow tones in corruption scenes.
+   - **Neutral**: `#2F2F2F` (Dark Gray) - for UI balance and neutral backdrop elements.
+
+#### 3. **Sandstorm**
+   - **Description**: Earthy tones of browns, yellows, and dusty oranges that evoke desert and arid landscapes.
+   - **Usage**: Perfect for desert-themed environments, sand-based enemies, or UI elements related to earth and resilience. Use in environments where visibility or dryness is a theme.
+   - **Primary**: `#D4A76E` (Sandy Brown) - primary color for desert landscapes.
+   - **Secondary**: `#A67C52` (Medium Brown) - used for earthy midtones.
+   - **Accent**: `#E5C685` (Light Tan) - highlights areas with sand and grit.
+   - **Highlight**: `#F3D9A2` (Pale Beige) - used as a highlight for desert environments.
+   - **Shadow**: `#8C5A3D` (Dark Earth Brown) - adds depth in sandstorm visuals.
+   - **Neutral**: `#4D3826` (Dark Taupe) - for muted or background areas.
+
+#### 4. **Subterranean**
+   - **Description**: A subdued, cool palette with dark greens, grays, and browns to depict underground or cavernous spaces.
+   - **Usage**: Ideal for caves, underground dungeons, or areas with low light. Works well for UI elements that emphasize stealth or obscurity.
+   - **Primary**: `#3B4C38` (Deep Moss Green) - main color for underground visuals.
+   - **Secondary**: `#647B68` (Gray-Green) - midtone for underground walls or floors.
+   - **Accent**: `#A6B89C` (Pale Green) - occasional highlights, adding contrast to low-light areas.
+   - **Highlight**: `#D9E0D5` (Very Light Green) - faint light sources or reflections.
+   - **Shadow**: `#1E2B1A` (Dark Forest Green) - used in deeper shadowed parts.
+   - **Neutral**: `#333333` (Charcoal Gray) - neutral and text elements for legibility.
+
+#### 5. **Oceanic**
+   - **Description**: A range of deep blues, teals, and muted aquas to represent underwater settings and aquatic themes.
+   - **Usage**: For ocean-themed environments, aquatic enemies, or UI elements related to water or tranquility. Use in areas where depth and fluidity are emphasized.
+   - **Primary**: `#264653` (Deep Teal) - main color for underwater visuals.
+   - **Secondary**: `#2A9D8F` (Soft Aquatic Green) - secondary water elements and highlights.
+   - **Accent**: `#0096C7` (Bright Blue) - used for UI and highlights in ocean themes.
+   - **Highlight**: `#E0FBFC` (Soft Aqua) - reflective highlights for underwater scenes.
+   - **Shadow**: `#1B3A4B` (Dark Sea Blue) - shadow tones in deeper water.
+   - **Neutral**: `#2E4052` (Steel Gray) - background and UI balance in aquatic scenes.
+
+#### 6. **Briar**
+   - **Description**: A palette of rich greens, deep browns, and soft floral pinks, conveying lush forests and tangled thickets.
+   - **Usage**: Best suited for forest areas, nature-focused enemies, or UI elements linked to growth and natural themes. Suitable for pixel art involving foliage, wildlife, or enchanted forests.
+   - **Primary**: `#3E7C4C` (Rich Forest Green) - main color for nature-based elements.
+   - **Secondary**: `#8DBB74` (Light Olive Green) - lighter nature highlights.
+   - **Accent**: `#FF69B4` (Soft Pink) - flower or natural accents in forest settings.
+   - **Highlight**: `#A3D9A5` (Light Mint) - subtle highlights on greenery.
+   - **Shadow**: `#2A5331` (Dark Green) - shadows for depth in forest or foliage.
+   - **Neutral**: `#665544` (Warm Brown) - earthy tones for text or background.
