@@ -1,9 +1,3 @@
----
-name: Pull Request
-about: Create a pull request to propose changes
-labels: 
----
-
 ### Description
 
 <!-- Please include a summary of the changes and the related issue (if applicable). -->
