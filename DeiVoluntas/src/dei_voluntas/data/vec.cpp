@@ -164,6 +164,10 @@ Vec2i Vec2i::Normalize() const {
     }
     return Vec2i(x, y) / magnitude;
 }
+
+Vec2i Vec2i::VectorTo(const Vec2i &other) const {
+    return other - *this;
+}
 #pragma endregion
 
 #pragma region Vec2d
@@ -243,6 +247,10 @@ Vec2d Vec2d::Normalize() const {
     }
     return Vec2d(x, y) / magnitude;
 }
+
+Vec2d Vec2d::VectorTo(const Vec2d &other) const {
+    return other - *this;
+}
 #pragma endregion
 
 #pragma region Vec3f
@@ -252,6 +260,10 @@ const Vec3f Vec3f::ZERO = Vec3f(0.0f, 0.0f, 0.0f);
 const Vec3f Vec3f::UNIT_X = Vec3f(1.0f, 0.0f, 0.0f);
 const Vec3f Vec3f::UNIT_Y = Vec3f(0.0f, 1.0f, 0.0f);
 const Vec3f Vec3f::UNIT_Z = Vec3f(0.0f, 0.0f, 1.0f);
+const Vec3f Vec3f::UNIT_XY = Vec3f(1.0f, 1.0f, 0.0f);
+const Vec3f Vec3f::UNIT_XZ = Vec3f(1.0f, 0.0f, 1.0f);
+const Vec3f Vec3f::UNIT_YZ = Vec3f(0.0f, 1.0f, 1.0f);
+const Vec3f Vec3f::UNIT_XYZ = Vec3f(1.0f, 1.0f, 1.0f);
 #pragma endregion
 
 #pragma region Vec3i
@@ -261,6 +273,10 @@ const Vec3i Vec3i::ZERO = Vec3i(0, 0, 0);
 const Vec3i Vec3i::UNIT_X = Vec3i(1, 0, 0);
 const Vec3i Vec3i::UNIT_Y = Vec3i(0, 1, 0);
 const Vec3i Vec3i::UNIT_Z = Vec3i(0, 0, 1);
+const Vec3i Vec3i::UNIT_XY = Vec3i(1, 1, 0);
+const Vec3i Vec3i::UNIT_XZ = Vec3i(1, 0, 1);
+const Vec3i Vec3i::UNIT_YZ = Vec3i(0, 1, 1);
+const Vec3i Vec3i::UNIT_XYZ = Vec3i(1, 1, 1);
 #pragma endregion
 
 #pragma region Vec3d
@@ -270,4 +286,8 @@ const Vec3d Vec3d::ZERO = Vec3d(0.0, 0.0, 0.0);
 const Vec3d Vec3d::UNIT_X = Vec3d(1.0, 0.0, 0.0);
 const Vec3d Vec3d::UNIT_Y = Vec3d(0.0, 1.0, 0.0);
 const Vec3d Vec3d::UNIT_Z = Vec3d(0.0, 0.0, 1.0);
+const Vec3d Vec3d::UNIT_XY = Vec3d(1.0, 1.0, 0.0);
+const Vec3d Vec3d::UNIT_XZ = Vec3d(1.0, 0.0, 1.0);
+const Vec3d Vec3d::UNIT_YZ = Vec3d(0.0, 1.0, 1.0);
+const Vec3d Vec3d::UNIT_XYZ = Vec3d(1.0, 1.0, 1.0);
 #pragma endregion

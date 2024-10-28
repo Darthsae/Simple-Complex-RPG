@@ -5,9 +5,9 @@
 using namespace SimpleComplexRPG::Server;
 
 Packet::Packet(uint16_t version, uint8_t id) {
-    packet_version = version;
-    packet_id = id;
-    packet_sender = 0;
+    packetVersion = version;
+    packetID = id;
+    packetSender = 0;
     data = {};
 }
 
@@ -21,11 +21,11 @@ Packet::Packet(uint16_t version, uint8_t* data) {
         return;
     }
 
-    packet_version = version;
+    packetVersion = version;
 
-    packet_id = data[2];
+    packetID = data[2];
 
-    packet_sender = data[3];
+    packetSender = data[3];
 
     for (int i = 0; i < sizeof(data) - 4; i++) {
         this->data.emplace_back(data[4 + i]);
@@ -42,26 +42,26 @@ Packet::Packet(uint16_t version, std::vector<uint8_t> data) {
         return;
     }
 
-    packet_version = version;
+    packetVersion = version;
 
-    packet_id = data[2];
+    packetID = data[2];
 
-    packet_sender = data[3];
+    packetSender = data[3];
 
     for (int i = 0; i < data.size() - 4; i++) {
         this->data.emplace_back(data[4 + i]);
     }
 }
 
-uint8_t* Packet::to_bytes()
+uint8_t* Packet::ToBytes()
 {
     uint8_t* bytes = new uint8_t[4 + data.size()];
-    bytes[0] = (uint8_t)(packet_version >> 8);
-    bytes[1] = (uint8_t)packet_version;
+    bytes[0] = (uint8_t)(packetVersion >> 8);
+    bytes[1] = (uint8_t)packetVersion;
 
-    bytes[2] = packet_id;
+    bytes[2] = packetID;
 
-    bytes[3] = packet_sender;
+    bytes[3] = packetSender;
 
     for (int i = 0; i < data.size(); i++) {
         bytes[4 + i] = data[i];
@@ -70,58 +70,58 @@ uint8_t* Packet::to_bytes()
     return bytes;
 }
 
-std::vector<uint8_t> Packet::to_vec() {
+std::vector<uint8_t> Packet::ToVec() {
     std::vector<uint8_t> vec;
-    vec.push_back((uint8_t)(packet_version >> 8));
-    vec.push_back((uint8_t)packet_version);
-    vec.push_back(packet_id);
-    vec.push_back(packet_sender);
+    vec.push_back((uint8_t)(packetVersion >> 8));
+    vec.push_back((uint8_t)packetVersion);
+    vec.push_back(packetID);
+    vec.push_back(packetSender);
     for (int i = 0; i < data.size(); i++) {
         vec.push_back(data[i]);
     }
     return vec;
 }
 
-uint64_t Packet::get_indice(){
-    return (int)(place_holder / 8);
+uint64_t Packet::GetIndice(){
+    return (int)(placeHolder / 8);
 }
 
 
 // Serialization
 
-void Packet::serialize(int8_t value) {
+void Packet::Serialize(int8_t value) {
     data.emplace_back((uint8_t)value);
 }
 
-void Packet::serialize(uint8_t value) {
+void Packet::Serialize(uint8_t value) {
     data.emplace_back(value);
 }
 
-void Packet::serialize(int16_t value) {
+void Packet::Serialize(int16_t value) {
     data.emplace_back((uint8_t)(value >> 8));
     data.emplace_back((uint8_t)value);
 }
 
-void Packet::serialize(uint16_t value) {
+void Packet::Serialize(uint16_t value) {
     data.emplace_back((uint8_t)(value >> 8));
     data.emplace_back((uint8_t)value);
 }
 
-void Packet::serialize(int32_t value) {
+void Packet::Serialize(int32_t value) {
     data.emplace_back((uint8_t)(value >> 24));
     data.emplace_back((uint8_t)(value >> 16));
     data.emplace_back((uint8_t)(value >> 8));
     data.emplace_back((uint8_t)value);
 }
 
-void Packet::serialize(uint32_t value) {
+void Packet::Serialize(uint32_t value) {
     data.emplace_back((uint8_t)(value >> 24));
     data.emplace_back((uint8_t)(value >> 16));
     data.emplace_back((uint8_t)(value >> 8));
     data.emplace_back((uint8_t)value);
 }
 
-void Packet::serialize(int64_t value) {
+void Packet::Serialize(int64_t value) {
     data.emplace_back((uint8_t)(value >> 56));
     data.emplace_back((uint8_t)(value >> 48));
     data.emplace_back((uint8_t)(value >> 40));
@@ -132,7 +132,7 @@ void Packet::serialize(int64_t value) {
     data.emplace_back((uint8_t)value);
 }   
 
-void Packet::serialize(uint64_t value) {
+void Packet::Serialize(uint64_t value) {
     data.emplace_back((uint8_t)(value >> 56));
     data.emplace_back((uint8_t)(value >> 48));
     data.emplace_back((uint8_t)(value >> 40));
@@ -143,19 +143,19 @@ void Packet::serialize(uint64_t value) {
     data.emplace_back((uint8_t)value);
 }
 
-void Packet::serialize(float value) {
-    serialize(*(uint32_t*)&value);
+void Packet::Serialize(float value) {
+    Serialize(*(uint32_t*)&value);
 }
 
-void Packet::serialize(double value) {
-    serialize(*(uint64_t*)&value);
+void Packet::Serialize(double value) {
+    Serialize(*(uint64_t*)&value);
 }
 
-void Packet::serialize(bool value) {    
+void Packet::Serialize(bool value) {    
     data.emplace_back((uint8_t)value);
 }
 
-void Packet::serialize(std::string value) {
+void Packet::Serialize(std::string value) {
     data.push_back((uint8_t)value.size());
     for (int i = 0; i < value.size(); i++) {
         data.push_back((uint8_t)value[i]);
@@ -165,71 +165,71 @@ void Packet::serialize(std::string value) {
 
 // Deserialization
 
-int8_t Packet::deserialize_int8() {
+int8_t Packet::DeserializeInt8() {
     uint8_t value = data[0];
     data.erase(data.begin());
     return value;
 }
 
-uint8_t Packet::deserialize_uint8() {
+uint8_t Packet::DeserializeUInt8() {
     uint8_t value = data[0];
     data.erase(data.begin());
     return value;
 }
 
-int16_t Packet::deserialize_int16() {
+int16_t Packet::DeserializeInt16() {
     int16_t value = ((int16_t)data[0] << 8) | data[1];
     data.erase(data.begin(), data.begin() + 2);
     return value;
 }
 
-uint16_t Packet::deserialize_uint16() {
+uint16_t Packet::DeserializeUInt16() {
     uint16_t value = ((uint16_t)data[0] << 8) | data[1];
     data.erase(data.begin(), data.begin() + 2);
     return value;
 }
 
-int32_t Packet::deserialize_int32() {    
+int32_t Packet::DeserializeInt32() {    
     int32_t value = ((int32_t)data[0] << 24) | ((int32_t)data[1] << 16) | ((int32_t)data[2] << 8) | data[3];
     data.erase(data.begin(), data.begin() + 4);
     return value;
 }
 
-uint32_t Packet::deserialize_uint32() {
+uint32_t Packet::DeserializeUInt32() {
     uint32_t value = ((uint32_t)data[0] << 24) | ((uint32_t)data[1] << 16) | ((uint32_t)data[2] << 8) | data[3];
     data.erase(data.begin(), data.begin() + 4);
     return value;
 }
 
-int64_t Packet::deserialize_int64() {
+int64_t Packet::DeserializeInt64() {
     int64_t value = ((uint64_t)data[0] << 56) | ((uint64_t)data[1] << 48) | ((uint64_t)data[2] << 40) | ((uint64_t)data[3] << 32) | ((uint64_t)data[4] << 24) | ((uint64_t)data[5]) << 16 | ((uint64_t)data[6] << 8) | data[7];
     data.erase(data.begin(), data.begin() + 8);
     return value;
 }
 
-uint64_t Packet::deserialize_uint64() {
+uint64_t Packet::DeserializeUInt64() {
     uint64_t value = ((uint64_t)data[0] << 56) | ((uint64_t)data[1] << 48) | ((uint64_t)data[2] << 40) | ((uint64_t)data[3] << 32) | ((uint64_t)data[4] << 24) | ((uint64_t)data[5]) << 16 | ((uint64_t)data[6] << 8) | data[7];
     data.erase(data.begin(), data.begin() + 8);
     return value;
 }
 
-float Packet::deserialize_float() {
-    uint32_t value = deserialize_uint32();
+float Packet::DeserializeFloat() {
+    uint32_t value = DeserializeUInt32();
     return *(float*)&value;
 }
 
-double Packet::deserialize_double() {
-    uint64_t value = deserialize_uint64();
+double Packet::DeserializeDouble() {
+    uint64_t value = DeserializeUInt64();
     return *(double*)&value;
 }
 
-bool Packet::deserialize_bool() {
+bool Packet::DeserializeBool() {
     bool value = data[0];
     data.erase(data.begin());
     return value;
 }
 
-std::string Packet::deserialize_string() {
+std::string Packet::DeserializeString() {
     uint8_t size = data[0];
     std::cout << "Size of string: " << size << "/" << (data.size() - 1) << std::endl;
     data.erase(data.begin());
