@@ -14,18 +14,18 @@ namespace SimpleComplexRPG::Client
     public:
         Client(boost::asio::io_context& io_context, tcp::resolver::results_type endpoints);
 
-        void write(const SCServer::Packet& message);
+        void Write(const SCServer::Packet& message);
 
-        void close();
+        void Close();
 
-        uint8_t get_id() { return id; }
+        uint8_t GetID() { return id; }
 
     private:
-        void connectToServer(const tcp::resolver::results_type& endpoints);
+        void ConnectToServer(const tcp::resolver::results_type& endpoints);
 
-        void readPacket();
+        void ReadPacket();
 
-        void writePacket();
+        void WritePacket();
 
         uint8_t id = 0;
 

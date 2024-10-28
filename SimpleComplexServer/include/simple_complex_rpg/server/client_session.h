@@ -16,18 +16,18 @@ namespace SimpleComplexRPG::Server {
     public:
         ClientSession(tcp::socket socket);
 
-        void start(uint8_t id);
+        void Start(uint8_t id);
 
-        void deliver(const Packet& message);
+        void Deliver(const Packet& message);
 
-        static std::vector<std::shared_ptr<ClientSession>> participants;
+        static std::vector<std::shared_ptr<ClientSession>> Participants;
 
-        uint8_t get_id() { return id; }
+        uint8_t GetID() { return id; }
 
     private:
-        void readPacket();
+        void ReadPacket();
 
-        void sendPacket();
+        void SendPacket();
 
         uint8_t id = 0;
 

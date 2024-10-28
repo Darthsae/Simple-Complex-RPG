@@ -276,10 +276,10 @@ int main(int, char**){
         else if (line.substr(0, 5) == "echo ") {
             std::string msg = line.substr(5);
             SCServer::Packet packet(SCServer::PacketVersion::V0, SCServer::PacketID::ECHO);
-            packet.packet_sender = client.get_id();
-            packet.serialize(msg);
-            client.write(packet);
-            std::cout << "Sent: " << (int)packet.packet_version << " of " << (int)packet.packet_id << std::endl;
+            packet.packetSender = client.GetID();
+            packet.Serialize(msg);
+            client.Write(packet);
+            std::cout << "Sent: " << (int)packet.packetVersion << " of " << (int)packet.packetID << std::endl;
         }
     }
     */
@@ -295,7 +295,7 @@ int main(int, char**){
     SDL_DestroyWindow(window);
     SDL_Quit();
 
-    client.close();
+    client.Close();
     t.join();
     return 0;
 }

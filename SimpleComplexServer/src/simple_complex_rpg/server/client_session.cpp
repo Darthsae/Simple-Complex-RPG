@@ -3,27 +3,27 @@
 
 using namespace SimpleComplexRPG::Server;
 
-std::vector<std::shared_ptr<ClientSession>> ClientSession::participants;
+std::vector<std::shared_ptr<ClientSession>> ClientSession::Participants;
 
 ClientSession::ClientSession(tcp::socket socket) : socket_(std::move(socket)) {
     readMsg_ = new uint8_t[Packet::MAX_PACKET_SIZE];
 }
 
-void ClientSession::start(uint8_t id) {
+void ClientSession::Start(uint8_t id) {
     this->id = id;
     std::cout << "Client " << (int)id << " connected" << std::endl;
-    readPacket();
+    ReadPacket();
 }
 
-void ClientSession::deliver(const Packet& message) {
+void ClientSession::Deliver(const Packet& message) {
     bool writeInProgress = !writeMessages_.empty();
     writeMessages_.push_back(message);
     if (!writeInProgress) {
-        sendPacket();
+        SendPacket();
     }
 }
 
-void ClientSession::readPacket() {
+void ClientSession::ReadPacket() {
     auto self(shared_from_this());
 
     boost::asio::async_read(socket_, boost::asio::buffer(&readHeader_, sizeof(uint32_t)),
@@ -48,62 +48,62 @@ void ClientSession::readPacket() {
 
                         Packet packet(PacketVersion::V0, vec);
                         //std::cout << "Packet size: " << length << std::endl;
-                        //std::cout << "Received packet version: " << (int)packet.packet_version << " of " << (int)packet.packet_id << std::endl;
+                        //std::cout << "Received packet version: " << (int)packet.packetVersion << " of " << (int)packet.packetID << std::endl;
 
                         readMsg_ = new uint8_t[Packet::MAX_PACKET_SIZE];
 
-                        switch (packet.packet_id) {
+                        switch (packet.packetID) {
                             case PacketID::SYNC: {
                                 //std::cout << "Sync received" << std::endl;
                                 // Broadcast to all clients
-                                for (auto& participant : participants) {
-                                    participant->deliver(packet);
+                                for (auto& participant : Participants) {
+                                    participant->Deliver(packet);
                                 }
                                 break;
                             }
                             case PacketID::ECHO: {
-                                //std::cout << "Echo received from client " << (int)packet.packet_sender << std::endl;
+                                //std::cout << "Echo received from client " << (int)packet.packetSender << std::endl;
                                 // Broadcast to all clients
-                                for (auto& participant : participants) {
-                                    if (participant->get_id() != packet.packet_sender) participant->deliver(packet);
+                                for (auto& participant : Participants) {
+                                    if (participant->GetID() != packet.packetSender) participant->Deliver(packet);
                                 }
                                 break;
                             }
                             case PacketID::QUIT: {
-                                std::cout << "Client " << (int)packet.packet_sender << " disconnected, resyncing all clients" << std::endl;
-                                participants.erase(participants.begin() + packet.packet_sender - 1);
+                                std::cout << "Client " << (int)packet.packetSender << " disconnected, resyncing all clients" << std::endl;
+                                Participants.erase(Participants.begin() + packet.packetSender - 1);
 
                                 // Broadcast to all clients
                                 uint8_t i = 0;
-                                for (auto& participant : participants) {
+                                for (auto& participant : Participants) {
                                     i++;
                                     Packet resync(PacketVersion::V0, PacketID::SYNC);
-                                    resync.packet_sender = 0;
-                                    resync.serialize(i);
-                                    participant->deliver(resync);
+                                    resync.packetSender = 0;
+                                    resync.Serialize(i);
+                                    participant->Deliver(resync);
                                 }
                                 break;
                             }
                         }
 
-                        readPacket();
+                        ReadPacket();
                     }
                 });
         });
     
 }
 
-void ClientSession::sendPacket() {
+void ClientSession::SendPacket() {
     auto self(shared_from_this());
     // Step 1: Serialize the packet
-    uint32_t packetSize = (uint32_t)writeMessages_.front().to_vec().size();
+    uint32_t packetSize = (uint32_t)writeMessages_.front().ToVec().size();
 
     // Step 2: Prepare a buffer for header + data
     buffer = std::vector<uint8_t>(sizeof(uint32_t) + packetSize);
     std::memcpy(buffer.data(), &packetSize, sizeof(uint32_t));
-    std::memcpy(buffer.data() + sizeof(uint32_t), writeMessages_.front().to_bytes(), packetSize);
+    std::memcpy(buffer.data() + sizeof(uint32_t), writeMessages_.front().ToBytes(), packetSize);
 
-    //std::cout << "Sending: " << (int)writeMessages_.front().packet_version << " of " << (int)writeMessages_.front().packet_id << std::endl;
+    //std::cout << "Sending: " << (int)writeMessages_.front().packetVersion << " of " << (int)writeMessages_.front().packetID << std::endl;
     //std::cout << "The buffer is " << buffer.size() << " bytes long" << std::endl;
     //std::cout << "The data is " << packetSize << " bytes long" << std::endl;
 
@@ -112,7 +112,7 @@ void ClientSession::sendPacket() {
             if (!ec) {
                 writeMessages_.pop_front();
                 if (!writeMessages_.empty()) {
-                    sendPacket();
+                    SendPacket();
                 }
             }
         });
