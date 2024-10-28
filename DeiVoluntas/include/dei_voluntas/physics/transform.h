@@ -7,7 +7,7 @@ using DeiVoluntas::Data::Vec3f;
 using DeiVoluntas::Data::Vec2d;
 using DeiVoluntas::Data::Vec3d;
 
-namespace DeiVoluntas::Physics::DeiVoluntas {
+namespace DeiVoluntas::Physics {
     struct Transform2f {
         Transform2f();
         Transform2f(Vec2f position, float rotation, Vec2f scale);
