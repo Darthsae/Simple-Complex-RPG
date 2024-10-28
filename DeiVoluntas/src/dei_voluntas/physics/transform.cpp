@@ -1,6 +1,6 @@
-#include "dei_voluntas/physics/dei_voluntas/transform.h"
+#include "dei_voluntas/physics/transform.h"
 
-using namespace DeiVoluntas::Physics::DeiVoluntas;
+using namespace DeiVoluntas::Physics;
 
 #pragma region Transform2f
 Transform2f::Transform2f() : position(0, 0), rotation(0), scale(1, 1) {}

@@ -1,6 +1,6 @@
-#include "dei_voluntas/physics/dei_voluntas/physical_properties.h"
+#include "dei_voluntas/physics/physical_properties.h"
 
-using namespace DeiVoluntas::Physics::DeiVoluntas;
+using namespace DeiVoluntas::Physics;
 
 #pragma region PhysicalPropertiesf
 PhysicalPropertiesf::PhysicalPropertiesf() : mass(1.0f), angularMass(1.0f) {}

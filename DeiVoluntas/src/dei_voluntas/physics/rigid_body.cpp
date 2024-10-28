@@ -1,6 +1,6 @@
-#include "dei_voluntas/physics/dei_voluntas/rigid_body.h"
+#include "dei_voluntas/physics/rigid_body.h"
 
-using namespace DeiVoluntas::Physics::DeiVoluntas;
+using namespace DeiVoluntas::Physics;
 
 #pragma region RigidBody2f
 RigidBody2f::RigidBody2f() : velocity(0.0f, 0.0f), angularVelocity(0.0f) {}

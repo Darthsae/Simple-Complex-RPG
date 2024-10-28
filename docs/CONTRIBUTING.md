@@ -40,22 +40,56 @@ Follow these naming conventions for consistency throughout the project:
 
 ### Example:
 ```cpp
-namespace MyNamespace {
-    class MyClass {
+// File: my_project/game_engine.h
+
+#ifndef GAME_ENGINE_H
+#define GAME_ENGINE_H
+
+namespace GameEngine {
+
+    // Constant definition
+    #define MAX_ENTITIES 1000
+
+    // Template type with PascalCase naming
+    template <typename EntityType>
+    class EntityManager {
     public:
-        static int StaticMember;
-        int instanceField;
+        static int DefaultCapacity; // Static variable in PascalCase
 
-        MyClass(int param);
+        EntityManager();
 
-        void MyFunction(int someValue);
+        // Function in PascalCase with function parameters in camelCase
+        void AddEntity(EntityType entity);
+        
+        // Getter using PascalCase for functions
+        EntityType GetEntity(int entityId) const;
+
+    private:
+        int entityCount; // Instance field in camelCase
     };
 
-    enum MyEnum {
-        VALUE_ONE,
-        VALUE_TWO
+    // Enum type in PascalCase, values in MACRO_CASE
+    enum EntityState {
+        ACTIVE,
+        INACTIVE,
+        DESTROYED
     };
+
+    class Renderer {
+    public:
+        static constexpr int MaxRenderDistance = 500; // Static constant with PascalCase
+        int renderDistance; // Instance member in camelCase
+
+        Renderer();
+        void RenderScene(int sceneId);
+    };
+
+    // Inline function using PascalCase and lambda with camelCase
+    inline auto FindEntity = [](int entityId) { return entityId >= 0; };
 }
+
+// Guards following MACRO_CASE
+#endif // GAME_ENGINE_H
 ```
 
 ### File and Folder Naming:

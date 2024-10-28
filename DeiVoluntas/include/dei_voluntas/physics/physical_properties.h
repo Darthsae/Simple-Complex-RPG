@@ -1,7 +1,7 @@
 #ifndef PHYSICAL_PROPERTIES_H
 #define PHYSICAL_PROPERTIES_H
 
-namespace DeiVoluntas::Physics::DeiVoluntas {
+namespace DeiVoluntas::Physics {
     struct PhysicalPropertiesf {
         PhysicalPropertiesf();
         PhysicalPropertiesf(float mass, float angularMass);

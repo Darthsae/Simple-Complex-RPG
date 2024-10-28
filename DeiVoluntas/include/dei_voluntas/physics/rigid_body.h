@@ -8,7 +8,7 @@ using DeiVoluntas::Data::Vec3f;
 using DeiVoluntas::Data::Vec2d;
 using DeiVoluntas::Data::Vec3d;
 
-namespace DeiVoluntas::Physics::DeiVoluntas {
+namespace DeiVoluntas::Physics {
     struct RigidBody2f {
         RigidBody2f();
         RigidBody2f(Vec2f velocity, float angularVelocity);

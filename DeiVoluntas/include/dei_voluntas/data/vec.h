@@ -12,6 +12,7 @@ namespace DeiVoluntas::Data {
         const static Vec2f ZERO;
         const static Vec2f UNIT_X;
         const static Vec2f UNIT_Y;
+        const static Vec2f UNIT_XY;
 
         Vec2f operator+(const Vec2f& other) const;
         Vec2f operator-(const Vec2f& other) const;
@@ -46,6 +47,7 @@ namespace DeiVoluntas::Data {
         const static Vec2i ZERO;
         const static Vec2i UNIT_X;
         const static Vec2i UNIT_Y;
+        const static Vec2i UNIT_XY;
 
         Vec2i operator+(const Vec2i& other) const;
         Vec2i operator-(const Vec2i& other) const;
@@ -78,6 +80,7 @@ namespace DeiVoluntas::Data {
         const static Vec2d ZERO;
         const static Vec2d UNIT_X;
         const static Vec2d UNIT_Y;
+        const static Vec2d UNIT_XY;
 
         Vec2d operator+(const Vec2d& other) const;
         Vec2d operator-(const Vec2d& other) const;
