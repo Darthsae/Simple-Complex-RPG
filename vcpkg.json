@@ -17,6 +17,7 @@
     "sdl2-gfx",
     "sdl2-ttf",
     "box2d",
-    "entt"
+    "entt",
+    "platform-folders"
   ]
 }

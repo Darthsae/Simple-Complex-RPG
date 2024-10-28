@@ -1,10 +1,13 @@
 #include "dei_voluntas/graphics/draw_system.h"
 #include "dei_voluntas/graphics/drawable.h"
+#include "dei_voluntas/graphics/sprite.h"
 #include "dei_voluntas/data/circle.h"
 #include "dei_voluntas/data/line.h"
 #include "dei_voluntas/physics/transform.h"
 #include "dei_voluntas/physics/rigid_body.h"
+#include "dei_voluntas/physics/body.h"
 #include <SDL2_gfxPrimitives.h>
+#include <iostream>
 
 using namespace DeiVoluntas::Graphics;
 
@@ -12,9 +15,9 @@ using DeiVoluntas::Data::QuadtreeNode;
 
 
 void DrawSystem::Draw(const Vec2f& position, const Vec2f& scale, entt::registry& registry, Quadtree<entt::entity>& quadtree, SDL_Renderer* renderer) {
-    auto drawableCircleView = registry.view<Data::Circlef, Physics::Transform2f, Physics::RigidBody2f, Drawable>();
-    auto drawableLineView = registry.view<Data::Line2f, Physics::Transform2f, Physics::RigidBody2f, Drawable>();
-    //auto drawableTextureView = registry.view<Data::Circlef, Physics::Transform2f, Physics::RigidBody2f, Drawable>();
+    auto drawableCircleView = registry.view<Data::Circlef, Physics::Transform2f, Drawable>();
+    auto drawableLineView = registry.view<Data::Line2f, Physics::Transform2f, Drawable>();
+    auto drawableTextureView = registry.view<Sprite, Physics::Transform2f, Drawable>();
 
     /*
     for (auto entity : drawableCircleView) {
@@ -37,6 +40,18 @@ void DrawSystem::Draw(const Vec2f& position, const Vec2f& scale, entt::registry&
             auto& drawable = drawableCircleView.get<Drawable>(entity.value);
 
             filledCircleRGBA(renderer, (Sint16)(quadtree.x - (transform.position.x - position.x)), (Sint16)(quadtree.y - (transform.position.y - position.y)), (Sint16)(circle.radius), drawable.color.r, drawable.color.g, drawable.color.b, drawable.color.a);
+        }
+        else if (drawableTextureView.contains(entity.value)) {
+            auto& sprite = drawableTextureView.get<Sprite>(entity.value);
+            auto& transform = drawableCircleView.get<Physics::Transform2f>(entity.value);
+            auto& drawable = drawableCircleView.get<Drawable>(entity.value);
+            auto& body = registry.get<Physics::Body>(entity.value);
+
+            SDL_Rect rect = SDL_Rect({(Sint16)(quadtree.x - (transform.position.x - position.x) - sprite.texture->size.x * 0.5f), (Sint16)(quadtree.y - (transform.position.y - position.y) - sprite.texture->size.y * 0.5f), sprite.texture->size.x, sprite.texture->size.y});
+
+            if (SDL_RenderCopyEx(renderer, sprite.texture->texture, NULL, &rect, transform.rotation * 180 / M_PI, NULL, SDL_RendererFlip::SDL_FLIP_NONE) != 0) {
+                std::cout << "Error: " << SDL_GetError() << std::endl;
+            }
         }
         
 

@@ -38,14 +38,6 @@ b2BodyPtr PhysicsSystem::CreateBody(float x, float y, const b2Shape& shape, b2Bo
 void PhysicsSystem::Update(entt::registry& registry, Quadtree<entt::entity>& quadtree, float deltaTime) {
     world.Step(deltaTime, 8, 3);
 
-    quadtree = Quadtree<entt::entity>(quadtree.x, quadtree.y, quadtree.width, quadtree.height, quadtree.capacity);
-
-    auto view = registry.view<Transform2f>();
-    for (auto entity : view) {
-        auto& pos = view.get<Transform2f>(entity);
-        quadtree.Insert({ pos.position.x, pos.position.y, entity });
-    }
-
     auto velocityView = registry.view<Transform2f, RigidBody2f, Body>();
     for (auto entity : velocityView) {
         auto &pos = velocityView.get<Transform2f>(entity);
@@ -60,6 +52,14 @@ void PhysicsSystem::Update(entt::registry& registry, Quadtree<entt::entity>& qua
         vel.velocity.x = bodyVel.x;
         vel.velocity.y = bodyVel.y;
         vel.angularVelocity = body.body->GetAngularVelocity();
+    }
+
+    quadtree = Quadtree<entt::entity>(quadtree.x, quadtree.y, quadtree.width, quadtree.height, quadtree.capacity);
+
+    auto view = registry.view<Transform2f>();
+    for (auto entity : view) {
+        auto& pos = view.get<Transform2f>(entity);
+        quadtree.Insert({ pos.position.x, pos.position.y, entity });
     }
 }
 

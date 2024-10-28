@@ -1,3 +1,7 @@
+//#define DEBUG
+//#define SPRITES
+//#define CIRCLES
+
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
@@ -10,12 +14,16 @@
 #include <dei_voluntas/scene.h>
 #include <dei_voluntas/physics/rigid_body.h>
 #include <dei_voluntas/physics/transform.h>
+#include <dei_voluntas/physics/body.h>
 #include <dei_voluntas/graphics/drawable.h>
 #include <dei_voluntas/data/circle.h>
+#include <dei_voluntas/graphics/sprite.h>
 #include <random>
 #include <imgui.h>
 #include <imgui_impl_sdl2.h>
 #include <imgui_impl_sdlrenderer2.h>
+#include <sago/platform_folders.h>
+#include <filesystem>
 
 using namespace SimpleComplexRPG::Client;
 
@@ -33,10 +41,11 @@ enum UIState {
 
 const float X_POS = 0.0f;
 const float Y_POS = 0.0f;
-const FLOAT X_SIZE = 8000.0f;
-const FLOAT Y_SIZE = 8000.0f;
+const float X_SIZE = 8000.0f;
+const float Y_SIZE = 8000.0f;
 const float MIN_RADIUS = 1.0f;
 const float MAX_RADIUS = 25.0f;
+const float MAX_FORCE = 1000000.0f;
 const float MAX_VELOCITY = 50.0f;
 
 int main(int, char**){
@@ -50,6 +59,24 @@ int main(int, char**){
     Client client(io_context, endpoints);
 
     boost::thread t([&io_context]() { io_context.run(); });
+
+    #pragma region Directories
+    std::string dataDirectory = sago::getDataHome() + "/SimpleComplexRPG/";
+    std::string textureDataDirectory = dataDirectory + "Textures/";
+    std::string saveDirectory = sago::getSaveGamesFolder1() + "/SimpleComplexRPG/";
+
+    if (!std::filesystem::exists(dataDirectory)) {
+        std::filesystem::create_directories(dataDirectory);
+    }
+
+    if (!std::filesystem::exists(textureDataDirectory)) {
+        std::filesystem::create_directories(textureDataDirectory);
+    }
+
+    if (!std::filesystem::exists(saveDirectory)) {
+        std::filesystem::create_directories(saveDirectory);
+    }
+    #pragma endregion
 
     bool quit = false;
     SDL_Event event;
@@ -79,15 +106,23 @@ int main(int, char**){
 
     DeiVoluntas::Scene scene = DeiVoluntas::Scene(0, Vec2f((X_SIZE / 2.0f + 400.0f) - X_POS, (Y_SIZE / 2.0f + 300.0f) - Y_POS), Vec2f(800.0f, 600.0f), Vec2f(X_POS, Y_POS), Vec2f(X_SIZE, Y_SIZE));
 
+    scene.BatchLoadTextures(renderer, textureDataDirectory);
+
+    #pragma region Random Generator
     std::default_random_engine generator;
     std::uniform_real_distribution<float> xPositionDistribution(X_POS + MAX_RADIUS, X_SIZE - X_POS - MAX_RADIUS);
     std::uniform_real_distribution<float> yPositionDistribution(Y_POS + MAX_RADIUS, Y_SIZE - Y_POS - MAX_RADIUS);
     std::uniform_real_distribution<float> velocityDistribution(-MAX_VELOCITY, MAX_VELOCITY);
+    std::uniform_real_distribution<float> forceDistribution(-MAX_FORCE, MAX_FORCE);
     std::uniform_real_distribution<float> radiusDistribution(MIN_RADIUS, MAX_RADIUS);
     std::uniform_int_distribution<uint16_t> colorDistribution(0, 255);
+    #pragma endregion
 
-    int testingEntities = 1000;
+    #ifdef DEBUG
+    #pragma region Testing
+    int testingEntities = 3000;
 
+    #ifdef CIRCLES
     for (int i = 0; i < testingEntities; i++) {
         Vec2f position = Vec2f(xPositionDistribution(generator), yPositionDistribution(generator));
         SDL_Color color = SDL_Color { (uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator) };
@@ -96,6 +131,18 @@ int main(int, char**){
         Vec2f velocity = Vec2f(velocityDistribution(generator), velocityDistribution(generator));
         scene.CreateEntity(position, color, shape, b2_dynamicBody, 1.0f, 0.0f, 1.0f, 0.0f, velocity, 0.0f, 0.0f, 0.0f, false);
     }
+    #endif
+    #ifdef SPRITES
+    for (int i = 0; i < testingEntities; i++) {
+        Vec2f position = Vec2f(xPositionDistribution(generator), yPositionDistribution(generator));
+        SDL_Color color = SDL_Color { (uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator), (uint8_t)colorDistribution(generator) };
+        b2PolygonShape shape = b2PolygonShape();
+        shape.SetAsBox(16.0f, 16.0f, b2Vec2(0.0f, 0.0f), 0.0f);
+        Vec2f velocity = Vec2f(velocityDistribution(generator), velocityDistribution(generator));
+        entt::entity entity = scene.CreateEntity(position, color, shape, b2_dynamicBody, 1.0f, 0.0f, 1.0f, 0.0f, velocity, 0.0f, 0.0f, 0.0f, false);
+        scene.registry.emplace<DeiVoluntas::Graphics::Sprite>(entity, scene.GetTexturePtr("corrupt_frame"));
+    }
+    #endif
 
     b2EdgeShape edge = b2EdgeShape();
     edge.SetTwoSided(b2Vec2(X_POS, Y_POS), b2Vec2(X_POS, Y_SIZE));
@@ -109,6 +156,8 @@ int main(int, char**){
 
     edge.SetTwoSided(b2Vec2(X_SIZE, Y_POS), b2Vec2(X_POS, Y_POS));
     scene.CreateEntity(Vec2f::ZERO, SDL_Color { 255, 255, 255, 255 }, edge, b2_staticBody, 1.0f, 0.0f, 0.0f, 0.0f, Vec2f::ZERO, 0.0f, 0.0f, 0.0f, true);
+    #pragma endregion
+    #endif
 
     float dt = 0.0f;
     float playerSpeed = 1.0f;
@@ -169,9 +218,8 @@ int main(int, char**){
 
         switch (currentUIState) {
             case UIState::TEMP:
-                ImGui::Begin("Debug", (bool*)0, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar);
-                ImGui::SetWindowPos(ImVec2(0, 0));
-                ImGui::SetWindowSize(ImVec2(124, 32));
+                ImGui::Begin("Debug Menu", (bool*)0, ImGuiWindowFlags_NoResize);
+                ImGui::SetWindowSize(ImVec2(124, 200));
 
                 float sum = 0;
 
@@ -181,13 +229,32 @@ int main(int, char**){
                 
                 ImGui::Text(("FPS: " + std::to_string((int)(RECENT_COUNT / sum))).c_str());
 
+                if (ImGui::Button("Debug Textures")) {
+                    for (auto& texture : scene.textures) {
+                        std::cout << texture.first << ": " << texture.second->size.x << ", " << texture.second->size.y << ". " << texture.second->texture << std::endl;
+                    }
+                }
+
+                if (ImGui::Button("Reset Position")) {
+                    ImGui::SetWindowPos(ImVec2(0, 0));
+                }
+
+                if (ImGui::Button("Random Force")) {
+                    auto bodyView = scene.registry.view<DeiVoluntas::Physics::Body>();
+                    for (auto entity : bodyView) {
+                        auto &body = bodyView.get<DeiVoluntas::Physics::Body>(entity);
+                        body.body->ApplyForceToCenter(b2Vec2(forceDistribution(generator), forceDistribution(generator)), true);
+                    }
+                }
+
                 ImGui::End();
                 break;
         }
 
         ImGui::Render();
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
         SDL_RenderClear(renderer);
+        SDL_Rect rect = SDL_Rect({100, 100, 132, 132});
         scene.Draw(renderer);
         ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
         SDL_RenderPresent(renderer);
