@@ -39,6 +39,38 @@ enum UIState {
     TEMP,
 };
 
+#pragma region Temporary Utility
+// These are very temporary, and will be removed and redone in a future overhaul of the ui.
+
+bool ButtonCenteredOnLine(const char* label, float alignment = 0.5f)
+{
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    float size = ImGui::CalcTextSize(label).x + style.FramePadding.x * 2.0f;
+    float avail = ImGui::GetContentRegionAvail().x;
+
+    float off = (avail - size) * alignment;
+    if (off > 0.0f)
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+
+    return ImGui::Button(label);
+}
+
+void TextCenteredOnLine(const char* label, float alignment = 0.5f)
+{
+    ImGuiStyle& style = ImGui::GetStyle();
+
+    float size = ImGui::CalcTextSize(label).x + style.FramePadding.x * 2.0f;
+    float avail = ImGui::GetContentRegionAvail().x;
+
+    float off = (avail - size) * alignment;
+    if (off > 0.0f)
+        ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
+
+    return ImGui::Text(label);
+}
+#pragma endregion
+
 const float X_POS = 0.0f;
 const float Y_POS = 0.0f;
 const float X_SIZE = 8000.0f;
@@ -78,6 +110,7 @@ int main(int, char**){
     }
     #pragma endregion
 
+    bool debugMenu = true;
     bool quit = false;
     SDL_Event event;
 
@@ -102,7 +135,7 @@ int main(int, char**){
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer); 
     ImGui_ImplSDLRenderer2_Init(renderer);
 
-    UIState currentUIState = UIState::TEMP;
+    UIState currentUIState = UIState::MAIN_MENU;
 
     DeiVoluntas::Scene scene = DeiVoluntas::Scene(0, Vec2f((X_SIZE / 2.0f + 400.0f) - X_POS, (Y_SIZE / 2.0f + 300.0f) - Y_POS), Vec2f(800.0f, 600.0f), Vec2f(X_POS, Y_POS), Vec2f(X_SIZE, Y_SIZE));
 
@@ -159,6 +192,9 @@ int main(int, char**){
     #pragma endregion
     #endif
 
+    float frames = 0;
+    float framerateCurrent = 0.0f;
+
     float dt = 0.0f;
     float playerSpeed = 1.0f;
     const uint8_t* keyboardState;
@@ -185,6 +221,9 @@ int main(int, char**){
                 switch (event.key.keysym.sym) {
                     case SDLK_BACKQUOTE:
                         quit = true;
+                        break;
+                    case SDLK_TAB:
+                        debugMenu = !debugMenu;
                         break;
                 }
             }
@@ -216,45 +255,74 @@ int main(int, char**){
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
+        #pragma region User Interface
         switch (currentUIState) {
-            case UIState::TEMP:
-                ImGui::Begin("Debug Menu", (bool*)0, ImGuiWindowFlags_NoResize);
-                ImGui::SetWindowSize(ImVec2(124, 200));
+            case UIState::MAIN_MENU:
+                ImGui::Begin("Main Menu", (bool*)0, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
+                ImGui::SetWindowPos(ImVec2(250, 100));
+                ImGui::SetWindowSize(ImVec2(300, 400));
 
-                float sum = 0;
+                TextCenteredOnLine("Simple Complex Client");
+                
+                if (ButtonCenteredOnLine("Start Game")) {
+                    std::cout << "Start Game" << std::endl;
+                }
 
-                for (int i = 0; i < RECENT_COUNT; i++) {
-                    sum += recent[i];
+                if (ButtonCenteredOnLine("Load Game")) {
+                    std::cout << "Load Game" << std::endl;
                 }
                 
-                ImGui::Text(("FPS: " + std::to_string((int)(RECENT_COUNT / sum))).c_str());
-
-                if (ImGui::Button("Debug Textures")) {
-                    for (auto& texture : scene.textures) {
-                        std::cout << texture.first << ": " << texture.second->size.x << ", " << texture.second->size.y << ". " << texture.second->texture << std::endl;
-                    }
+                if (ButtonCenteredOnLine("Settings")) {
+                    std::cout << "Settings" << std::endl;
                 }
 
-                if (ImGui::Button("Reset Position")) {
-                    ImGui::SetWindowPos(ImVec2(0, 0));
-                }
-
-                if (ImGui::Button("Random Force")) {
-                    auto bodyView = scene.registry.view<DeiVoluntas::Physics::Body>();
-                    for (auto entity : bodyView) {
-                        auto &body = bodyView.get<DeiVoluntas::Physics::Body>(entity);
-                        body.body->ApplyForceToCenter(b2Vec2(forceDistribution(generator), forceDistribution(generator)), true);
-                    }
+                if (ButtonCenteredOnLine("Quit")) {
+                    std::cout << "Quit" << std::endl;
+                    quit = true;
                 }
 
                 ImGui::End();
                 break;
         }
 
+        #pragma region Debug Menu
+        if (ImGui::Begin("Debug Menu", &debugMenu)) {
+            ImGui::SetWindowSize(ImVec2(124, 200));
+
+            frames -= dt;
+            if (frames < 0) {
+                framerateCurrent = (int)ImGui::GetIO().Framerate;
+                frames = 0.2f;
+            }
+
+            ImGui::Text(("FPS: " + std::to_string(framerateCurrent)).c_str());
+
+            if (ImGui::Button("Debug Textures")) {
+                for (auto& texture : scene.textures) {
+                    std::cout << texture.first << ": " << texture.second->size.x << ", " << texture.second->size.y << ". " << texture.second->texture << std::endl;
+                }
+            }
+
+            if (ImGui::Button("Reset Position")) {
+                ImGui::SetWindowPos(ImVec2(0, 0));
+            }
+
+            if (ImGui::Button("Random Force")) {
+                auto bodyView = scene.registry.view<DeiVoluntas::Physics::Body>();
+                for (auto entity : bodyView) {
+                    auto &body = bodyView.get<DeiVoluntas::Physics::Body>(entity);
+                    body.body->ApplyForceToCenter(b2Vec2(forceDistribution(generator), forceDistribution(generator)), true);
+                }
+            }
+        }
+
+        ImGui::End();
+        #pragma endregion
+        #pragma endregion
+
         ImGui::Render();
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
         SDL_RenderClear(renderer);
-        SDL_Rect rect = SDL_Rect({100, 100, 132, 132});
         scene.Draw(renderer);
         ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
         SDL_RenderPresent(renderer);

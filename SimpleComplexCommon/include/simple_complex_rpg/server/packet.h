@@ -26,7 +26,8 @@ namespace SimpleComplexRPG::Server {
         DELIVER = 2,///< Packet for delivering data.
         ECHO = 3,   ///< Packet used for echoing messages.
         QUIT = 4,   ///< Packet indicating a quit action.
-        UPDATE = 5  ///< Packet indicating an update action.
+        UPDATE = 5, ///< Packet indicating an update action.
+        CONFIG = 6  ///< Packet indicating a configuration action.
     };
 
     /**
@@ -55,7 +56,7 @@ namespace SimpleComplexRPG::Server {
 
         uint64_t placeHolder = 0; ///< Reserved placeholder for future use.
 
-        uint32_t size = 0; ///< The size of the packet data.
+        uint32_t packetSize = 0; ///< The size of the packet data.
 
         /**
          * @brief Constructs a Packet with specified version and ID.
