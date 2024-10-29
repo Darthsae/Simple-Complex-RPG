@@ -14,22 +14,22 @@ The versioning system for **SimpleComplexRPG** follows a structured format of `x
 
 1. **Alpha**
    - **Definition**: This level denotes an early version of the software that is still in development. Features may be incomplete, and the version may contain significant bugs.
-   - **Example**: `xxxx.xxxx.xxxx.xxxx-alpha`
+   - **Example**: `xxxx.xxxx.xxxx.xxxx-α`
    - **Usage**: Versions in this level are meant for internal testing and are not recommended for general use.
 
 2. **Beta**
    - **Definition**: This level indicates a version that is feature-complete but may still contain bugs. It is suitable for testing by users outside of the core development team.
-   - **Example**: `xxxx.xxxx.xxxx.xxxx-beta`
+   - **Example**: `xxxx.xxxx.xxxx.xxxx-β`
    - **Usage**: Versions in this level are intended for broader testing and feedback collection.
 
 3. **Gamma**
    - **Definition**: This level represents a version that is stable and does not contain known bugs. It is safe for general use and introduces new features or improvements without breaking existing functionality.
-   - **Example**: `xxxx.xxxx.xxxx.xxxx-gamma`
+   - **Example**: `xxxx.xxxx.xxxx.xxxx-γ`
    - **Usage**: Versions in this level are suitable for regular users and may include enhancements or optimizations.
 
 4. **Delta**
    - **Definition**: This level represents a release that includes substantial changes or improvements that may not be backward compatible. It indicates a shift in functionality or performance.
-   - **Example**: `xxxx.xxxx.xxxx.xxxx-delta`
+   - **Example**: `xxxx.xxxx.xxxx.xxxx-δ`
    - **Usage**: Versions in this level are for users who are prepared for major updates and potential changes in existing features.
 
 #### Incrementing Versions
@@ -41,4 +41,4 @@ The versioning system for **SimpleComplexRPG** follows a structured format of `x
 
 #### Conclusion
 
-This versioning structure will help maintain clarity regarding the status of the software, allowing developers and users to understand the stability and readiness of different releases. The use of **gamma** as a Greek letter for the stable level adds a unique touch, distinguishing it from traditional versioning. Consistent use of this versioning system will aid in effective communication about updates and changes within the **SimpleComplexRPG** project.
+This versioning structure will help maintain clarity regarding the status of the software, allowing developers and users to understand the stability and readiness of different releases. Consistent use of this versioning system will aid in effective communication about updates and changes within the **SimpleComplexRPG** project.
