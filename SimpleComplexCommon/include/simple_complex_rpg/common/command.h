@@ -98,6 +98,17 @@ namespace SimpleComplexRPG::Common {
          */
         void AddParameter(ParameterType param);
 
+        /**
+         * @brief Tokenizes a command input stream into parameters.
+         *
+         * This function processes each character from the input stream to create a list of parameters.
+         * Parameters may be of different types, including integers, doubles, booleans, or strings,
+         * depending on their format in the stream. Quotation marks denote string parameters, and the
+         * function can detect different data types by examining the format of each token.
+         *
+         * @param stream The input stream containing the command.
+         * @param parameters The vector to store the parsed parameters.
+         */
         static void Tokenize(std::istringstream& stream, std::vector<Parameter>& parameters);
     };
 }
