@@ -5,8 +5,13 @@
 #include <thread>
 #include <atomic>
 #include <sago/platform_folders.h>
+#include <simple_complex_rpg/common/command_handler.h>
 
 using SimpleComplexRPG::Server::ServerConfig;
+using SimpleComplexRPG::Common::CommandHandler;
+using SimpleComplexRPG::Common::Command;
+using SimpleComplexRPG::Common::Parameter;
+using SimpleComplexRPG::Common::ParameterType;
 
 int main(int, char**){
     boost::asio::io_context io_context;
@@ -32,13 +37,53 @@ int main(int, char**){
     std::atomic<bool> quit{false};
     float dt = 0.0f;
 
+    #pragma region Commands
+    CommandHandler commandHandler = CommandHandler();
+    commandHandler.AddCommand(Command("quit", "Quits the server.", [&](const CommandHandler& handler, std::vector<Parameter>& parameters) {
+        quit = true;
+    }));
+
+    commandHandler.AddCommand(Command("help", [&](const CommandHandler& handler, const std::vector<Parameter>& parameters) {
+        std::cout << "Available commands:" << std::endl;
+        for (Command command : handler.commands) {
+            std::cout << "\t" << command.name << ": " << command.description << std::endl;
+        }
+    }));
+
+    commandHandler.AddCommand(Command("force_disconnect", [&](const CommandHandler& handler, const std::vector<Parameter>& parameters) {
+        SimpleComplexRPG::Server::Packet packet = SimpleComplexRPG::Server::Packet(SimpleComplexRPG::Server::PacketVersion::V0, SimpleComplexRPG::Server::PacketID::KICK);
+        if (parameters.size() >= 2 && parameters[1].index() == 2) {
+            packet.Serialize(std::get<std::string>(parameters[1]));
+        } else {
+            std::cout << "Expected string for reason but got a different type." << std::endl;
+            packet.Serialize("No reason given");
+        }
+        if (parameters.size() > 0) {
+            if (parameters[0].index() == 0) {  // Assuming index 1 corresponds to `int`
+                std::cout << "Force disconnecting client with ID: " << std::get<int>(parameters[0]) << std::endl;
+                int clientID = std::get<int>(parameters[0]);
+                server.WriteToClient(clientID, packet);
+            } else {
+                std::cout << "Expected integer for client ID but got a different type." << std::endl;
+            }
+        } else {
+            std::cout << "No parameters provided for force_disconnect command." << std::endl;
+        }
+    }));
+
+    commandHandler.commands[commandHandler.commands.size() - 1].AddParameter(ParameterType::INT);
+    commandHandler.commands[commandHandler.commands.size() - 1].AddParameter(ParameterType::STRING);
+
+    //commandHandler.AddCommand(Command("", [&](const CommandHandler& handler, std::vector<Parameter> parameters) {}));
+
+    commandHandler.AddCommand(Command("", [&](const CommandHandler& handler, const std::vector<Parameter>& parameters) {}));
+    #pragma endregion
+
     // Launch a separate thread to handle console input
     std::thread inputThread([&]() {
         std::string command;
         while (!quit) {
             std::getline(std::cin, command);
-
-            // TODO: Refine commands to be some type of data structure that can make procesing and integration easier.
 
             // Process the command
             // Trim leading and trailing whitespace
@@ -49,29 +94,16 @@ int main(int, char**){
             command = command.substr(0, command.find_last_not_of(" \t\r\n") + 1);
 
             // Split the command by whitespace
-            std::vector<std::string> tokens;
+            std::vector<Parameter> tokens;
             std::string token;
             std::istringstream tokenStream(command);
-            while (std::getline(tokenStream, token, ' ')) {
-                tokens.push_back(token);
-            }
+            Command::Tokenize(tokenStream, tokens);
 
             // Process the initializer
-            std::string initializer = tokens[0];
+            std::string initializer = std::get<std::string>(tokens[0]);
             tokens.erase(tokens.begin());
 
-            if (initializer == "quit") { // Quit command, no arguments
-                quit = true;
-            } else if (initializer == "help") { // Help command, no arguments
-                std::cout << "Available commands:" << std::endl;
-
-                // TODO: Unhardcode this once swapping command data structure is implemented
-                std::cout << "  quit" << std::endl;
-                std::cout << "  help" << std::endl;
-            } else { // Unknown command
-                std::cout << "Unknown initializer: " << initializer << std::endl;
-                continue;
-            }
+            commandHandler.ExecuteCommand(initializer, tokens);
         }
     });
 

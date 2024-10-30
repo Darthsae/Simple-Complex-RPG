@@ -84,6 +84,11 @@ void Client::ReadPacket() {
                                     //std::cout << "Server delta time: " << dt << std::endl;
                                     break;
                                 }
+                                case SCServer::PacketID::KICK: {
+                                    std::cout << "You have been kicked: " << packet.DeserializeString() << std::endl;
+                                    clientData->quit = true;
+                                    break;
+                                }
                             }
 
                             ReadPacket();

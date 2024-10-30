@@ -11,6 +11,7 @@
 #include <SDL_ttf.h>
 #include "simple_complex_rpg/client/client.h"
 #include "simple_complex_rpg/server/packet.h"
+#include "simple_complex_rpg/client/client_data.h"
 #include <dei_voluntas/scene.h>
 #include <dei_voluntas/physics/rigid_body.h>
 #include <dei_voluntas/physics/transform.h>
@@ -24,6 +25,9 @@
 #include <imgui_impl_sdlrenderer2.h>
 #include <sago/platform_folders.h>
 #include <filesystem>
+#include <simple_complex_rpg/common/command_handler.h>
+#include <simple_complex_rpg/common/command.h>
+#include <thread>
 
 using namespace SimpleComplexRPG::Client;
 
@@ -33,11 +37,11 @@ namespace Physics = DeiVoluntas::Physics;
 namespace Graphics = DeiVoluntas::Graphics;
 namespace Data = DeiVoluntas::Data;
 
-enum UIState {
-    MAIN_MENU,
-    GAME,
-    TEMP,
-};
+
+using SimpleComplexRPG::Common::CommandHandler;
+using SimpleComplexRPG::Common::Command;
+using SimpleComplexRPG::Common::Parameter;
+using SimpleComplexRPG::Common::ParameterType;
 
 #pragma region Temporary Utility
 // These are very temporary, and will be removed and redone in a future overhaul of the ui.
@@ -80,6 +84,8 @@ const float MAX_RADIUS = 25.0f;
 const float MAX_FORCE = 1000000.0f;
 const float MAX_VELOCITY = 50.0f;
 
+
+
 int main(int, char**){
     std::cout << "Hello, from SimpleComplexRPG!\n";
     std::string host = "localhost";
@@ -88,30 +94,59 @@ int main(int, char**){
     boost::asio::io_context io_context;
     tcp::resolver resolver(io_context);
     auto endpoints = resolver.resolve(host, port);
+
+    ClientData clientData;
+
     Client client(io_context, endpoints);
+
+    client.SetClientData(&clientData);
 
     boost::thread t([&io_context]() { io_context.run(); });
 
-    #pragma region Directories
-    std::string dataDirectory = sago::getDataHome() + "/SimpleComplexRPG/";
-    std::string textureDataDirectory = dataDirectory + "Textures/";
-    std::string saveDirectory = sago::getSaveGamesFolder1() + "/SimpleComplexRPG/";
+    #pragma region Commands
+    CommandHandler commandHandler = CommandHandler();
+    commandHandler.AddCommand(Command("quit", "Quits the server.", [&](const CommandHandler& handler, std::vector<Parameter>& parameters) {
+        clientData.quit = true;
+    }));
+    
+    commandHandler.AddCommand(Command("help", [&](const CommandHandler& handler, const std::vector<Parameter>& parameters) {
+        std::cout << "Available commands:" << std::endl;
+        for (Command command : handler.commands) {
+            std::cout << "\t" << command.name << ": " << command.description << std::endl;
+        }
+    }));
 
-    if (!std::filesystem::exists(dataDirectory)) {
-        std::filesystem::create_directories(dataDirectory);
-    }
-
-    if (!std::filesystem::exists(textureDataDirectory)) {
-        std::filesystem::create_directories(textureDataDirectory);
-    }
-
-    if (!std::filesystem::exists(saveDirectory)) {
-        std::filesystem::create_directories(saveDirectory);
-    }
+    //commandHandler.AddCommand(Command("", [&](const CommandHandler& handler, std::vector<Parameter> parameters) {}));
     #pragma endregion
 
-    bool debugMenu = true;
-    bool quit = false;
+    // Launch a separate thread to handle console input
+    std::thread inputThread([&]() {
+        std::string command;
+        while (!clientData.quit) {
+            std::getline(std::cin, command);
+
+            // Process the command
+            // Trim leading and trailing whitespace
+            command = command.substr(command.find_first_not_of(" \t\r\n"));
+            if (command.length() == 0) {
+                continue;
+            }
+            command = command.substr(0, command.find_last_not_of(" \t\r\n") + 1);
+
+            // Split the command by whitespace
+            std::vector<Parameter> tokens;
+            std::string token;
+            std::istringstream tokenStream(command);
+            Command::Tokenize(tokenStream, tokens);
+
+            // Process the initializer
+            std::string initializer = std::get<std::string>(tokens[0]);
+            tokens.erase(tokens.begin());
+
+            commandHandler.ExecuteCommand(initializer, tokens);
+        }
+    });
+    
     SDL_Event event;
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -135,11 +170,9 @@ int main(int, char**){
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer); 
     ImGui_ImplSDLRenderer2_Init(renderer);
 
-    UIState currentUIState = UIState::MAIN_MENU;
-
     DeiVoluntas::Scene scene = DeiVoluntas::Scene(0, Vec2f((X_SIZE / 2.0f + 400.0f) - X_POS, (Y_SIZE / 2.0f + 300.0f) - Y_POS), Vec2f(800.0f, 600.0f), Vec2f(X_POS, Y_POS), Vec2f(X_SIZE, Y_SIZE));
 
-    scene.BatchLoadTextures(renderer, textureDataDirectory);
+    scene.BatchLoadTextures(renderer, clientData.textureDataDirectory);
 
     #pragma region Random Generator
     std::default_random_engine generator;
@@ -199,31 +232,21 @@ int main(int, char**){
     float playerSpeed = 1.0f;
     const uint8_t* keyboardState;
 
-    const int RECENT_COUNT = 20;
-
-    float recent[RECENT_COUNT];
-
-    for (int i = 0; i < RECENT_COUNT; i++) {
-        recent[i] = 0.0f;
-    }
-
-    int recentIndex = 0;
-
-    while (!quit) {
+    while (!clientData.quit) {
         auto startTime = std::chrono::high_resolution_clock::now();
 
         while (SDL_PollEvent(&event) != 0) {
             ImGui_ImplSDL2_ProcessEvent(&event);
             if (event.type == SDL_QUIT) {
-                quit = true;
+                clientData.quit = true;
             }
             else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
                     case SDLK_BACKQUOTE:
-                        quit = true;
+                        clientData.quit = true;
                         break;
                     case SDLK_TAB:
-                        debugMenu = !debugMenu;
+                        clientData.debugMenu = !clientData.debugMenu;
                         break;
                 }
             }
@@ -256,7 +279,7 @@ int main(int, char**){
         ImGui::NewFrame();
 
         #pragma region User Interface
-        switch (currentUIState) {
+        switch (clientData.currentUIState) {
             case UIState::MAIN_MENU:
                 ImGui::Begin("Main Menu", (bool*)0, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoTitleBar);
                 ImGui::SetWindowPos(ImVec2(250, 100));
@@ -278,7 +301,7 @@ int main(int, char**){
 
                 if (ButtonCenteredOnLine("Quit")) {
                     std::cout << "Quit" << std::endl;
-                    quit = true;
+                    clientData.quit = true;
                 }
 
                 ImGui::End();
@@ -286,12 +309,12 @@ int main(int, char**){
         }
 
         #pragma region Debug Menu
-        if (ImGui::Begin("Debug Menu", &debugMenu)) {
+        if (ImGui::Begin("Debug Menu", &clientData.debugMenu)) {
             ImGui::SetWindowSize(ImVec2(124, 200));
 
             frames -= dt;
             if (frames < 0) {
-                framerateCurrent = (int)ImGui::GetIO().Framerate;
+                framerateCurrent = ImGui::GetIO().Framerate;
                 frames = 0.2f;
             }
 
@@ -330,9 +353,6 @@ int main(int, char**){
         auto stopTime = std::chrono::high_resolution_clock::now();
 
 		dt = std::chrono::duration<float, std::chrono::seconds::period>(stopTime - startTime).count();
-
-        recent[recentIndex] = dt;
-        recentIndex = (recentIndex + 1) % RECENT_COUNT;
     }
 
     /*

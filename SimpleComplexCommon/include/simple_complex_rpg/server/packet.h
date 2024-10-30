@@ -27,7 +27,8 @@ namespace SimpleComplexRPG::Server {
         ECHO = 3,   ///< Packet used for echoing messages.
         QUIT = 4,   ///< Packet indicating a quit action.
         UPDATE = 5, ///< Packet indicating an update action.
-        CONFIG = 6  ///< Packet indicating a configuration action.
+        CONFIG = 6, ///< Packet indicating a configuration action.
+        KICK = 7    ///< Packet indicating a kick action.
     };
 
     /**

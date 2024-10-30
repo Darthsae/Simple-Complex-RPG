@@ -1,6 +1,7 @@
 #ifndef SCRPG_CLIENT_H
 #define SCRPG_CLIENT_H
 #include "simple_complex_rpg/server/packet.h"
+#include "simple_complex_rpg/client/client_data.h"
 #include <boost/asio.hpp>
 #include <deque>
 
@@ -20,6 +21,8 @@ namespace SimpleComplexRPG::Client
 
         uint8_t GetID() { return id; }
 
+        void SetClientData(ClientData* clientData) { this->clientData = clientData; }
+
     private:
         void ConnectToServer(const tcp::resolver::results_type& endpoints);
 
@@ -32,6 +35,8 @@ namespace SimpleComplexRPG::Client
         uint64_t temp = 0;
 
         std::vector<uint8_t> buffer;
+
+        ClientData* clientData;
 
         tcp::socket socket_;
         uint8_t* readMsg_;

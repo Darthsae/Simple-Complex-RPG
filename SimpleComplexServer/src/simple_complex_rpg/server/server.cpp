@@ -21,6 +21,15 @@ void Server::Update(float dt) {
     WriteToAllClients(packet);
 }
 
+void Server::WriteToClient(uint8_t id, const Packet& message) {
+    if (id >= ClientSession::Participants.size() || id < 0) {
+        std::cout << "Invalid client ID: " << id << std::endl;
+        return;
+    }
+
+    ClientSession::Participants[id]->Deliver(message);
+}
+
 void Server::WriteToAllClients(const Packet& message) {
     for (auto& session : ClientSession::Participants) {
         session->Deliver(message);
