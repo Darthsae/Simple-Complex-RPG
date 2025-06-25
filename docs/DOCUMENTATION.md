@@ -33,7 +33,7 @@ Namespaces should have a description to clarify their purpose.
  * @namespace <namespace_name>
  * @brief Brief description of the namespace.
  */
-namespace my_namespace {
+namespace MyNamespace {
     // Namespace content
 }
 ```
@@ -57,7 +57,7 @@ public:
      * @param param1 Description of the first parameter.
      * @param param2 Description of the second parameter.
      */
-    MyClass(int param1, double param2);
+    MyClass(int a_param1, double a_param2);
 
     /**
      * @brief Brief description of the method.
@@ -66,10 +66,10 @@ public:
      * @param value Description of the parameter.
      * @return What the function returns.
      */
-    int myMethod(int value) const;
+    int MyMethod(int value) const;
 
 private:
-    int memberVariable; ///< Brief description of the member variable.
+    int _memberVariable; ///< Brief description of the member variable.
 };
 
 /**
@@ -78,8 +78,8 @@ private:
  Detailed description of the class, including purpose and design notes.
  */
 struct MyStruct {
-    int x; ///< X coordinate.
-    int y; ///< Y coordinate.
+    int m_x; ///< X coordinate.
+    int m_y; ///< Y coordinate.
 };
 ```
 
@@ -111,7 +111,7 @@ Global variables and public members should be documented as needed.
  * @var <variable_name>
  * @brief Description of the variable.
  */
-int globalVar;
+int g_globalVar;
 ```
 
 ---
@@ -128,7 +128,7 @@ Every function or method must include a description of its parameters, return va
  * @param param2 Explanation of the second parameter.
  * @return Explanation of the return value.
  */
-int myFunction(int param1, double param2);
+int MyFunction(int a_param1, double a_param2);
 ```
 
 ---
@@ -142,8 +142,8 @@ Each enumerator in an enum should be explained.
  * @brief Brief description of the enum.
  */
 enum MyEnum {
-    Value1, ///< Description of Value1.
-    Value2, ///< Description of Value2.
+    VALUE_1, ///< Description of VALUE_1.
+    VALUE_2, ///< Description of VALUE_2.
 };
 ```
 
@@ -190,16 +190,16 @@ public:
      * @param param1 The ID to initialize.
      * @param param2 The initial value to store.
      */
-    MyClass(int param1, double param2);
+    MyClass(int a_param1, double a_param2);
 
     /**
      * @brief Retrieves the stored value.
      * @return The current value.
      */
-    double getValue() const;
+    double GetValue() const;
 
 private:
-    int id; ///< ID of the object.
-    double value; ///< Stored value.
+    int _id; ///< ID of the object.
+    double _value; ///< Stored value.
 };
 ```
